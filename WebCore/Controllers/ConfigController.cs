@@ -4,19 +4,12 @@
 */
 
 using System;
-using System.Collections.Generic;
 using System.IO;
-using System.Linq;
 using System.Threading.Tasks;
-using Microsoft.AspNet.Authorization;
-using Microsoft.AspNet.Mvc;
-using Microsoft.AspNet.Mvc.Rendering;
 using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.PlatformAbstractions;
 using MyNodes.Users;
 using MyNodes.WebController.Code;
 using MyNodes.WebController.ViewModels.Config;
-using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -32,10 +25,10 @@ namespace MyNodes.WebController.Controllers
         private string project_file;
         private IConfigurationRoot configuration;
 
-        public ConfigController(IConfigurationRoot configuration, IApplicationEnvironment appEnv)
+        public ConfigController(IConfigurationRoot configuration)
         {
             this.configuration = configuration;
-            string applicationPath = appEnv.ApplicationBasePath;
+            string applicationPath = configuration.;
             settings_file = Path.Combine(applicationPath, SETTINGS_FILE_NAME);
             project_file = Path.Combine(applicationPath, "project.json");
         }

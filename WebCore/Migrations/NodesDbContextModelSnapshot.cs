@@ -1,7 +1,6 @@
-using System;
-using MyNodes.Repositories.EF.SQLite;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using MyNodes.Repositories.EF.SQLite;
 
 namespace WebController.Migrations
 {

@@ -6,8 +6,6 @@
 using System;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNet.Mvc;
-using Microsoft.AspNet.Authorization;
 using MyNodes.Gateways.MySensors;
 using MyNodes.Users;
 using MyNodes.WebController.Code;

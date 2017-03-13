@@ -10,19 +10,13 @@ using System.Data.SqlClient;
 using System.IO;
 using System.Security.Claims;
 using System.Threading.Tasks;
-using Microsoft.AspNet.Mvc;
-using Microsoft.Data.Entity;
 using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.PlatformAbstractions;
-using MyNodes.Repositories.EF.SQLite;
 using MyNodes.Users;
 using MyNodes.WebController.Code;
 using MyNodes.WebController.ViewModels.Config;
 using MyNodes.WebController.ViewModels.FirstRun;
 using MyNodes.WebController.ViewModels.User;
 using Newtonsoft.Json.Linq;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace MyNodes.WebController.Controllers

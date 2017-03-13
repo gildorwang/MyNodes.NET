@@ -4,16 +4,11 @@
 */
 
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.Extensions.Configuration;
-using MyNodes.Gateways;
-using MyNodes.WebController.ViewModels.Config;
-using Newtonsoft.Json;
-using Node = MyNodes.Nodes.Node;
 using System.Linq;
 using MyNodes.Gateways.MySensors;
 using MyNodes.Nodes;

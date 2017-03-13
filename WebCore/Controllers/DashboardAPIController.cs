@@ -3,12 +3,8 @@
     License: http://www.gnu.org/licenses/gpl-3.0.txt  
 */
 
-using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
-using Microsoft.AspNet.Authorization;
-using Microsoft.AspNet.Mvc;
 using MyNodes.Nodes;
 using MyNodes.Users;
 using MyNodes.WebController.Code;
