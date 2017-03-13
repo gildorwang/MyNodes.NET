@@ -1,0 +1,28 @@
+﻿@using MyNodes.Gateways
+@using MyNodes.Gateways.MySensors
+@model IEnumerable<MyNodes.Gateways.MySensors.Node>
+
+@{
+    ViewBag.Title = "Hardware Nodes Settings";
+}
+
+<br />
+<div class="ui container">
+
+    <h2>@ViewBag.Title</h2>
+
+    <p>
+        < <a asp-action="Index">Hardware Nodes</a>
+    </p>
+    <div class="ui divider"></div>
+
+    <h4>Nodes:</h4>
+    <div style="padding-left: 20px">
+        @foreach (Node node in Model)
+        {
+            <a asp-action="Settings" asp-route-id="@node.Id">@node.GetSimpleName1()</a>
+            <br />
+        }
+    </div>
+    
+</div>

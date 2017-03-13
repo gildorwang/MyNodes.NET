@@ -1,0 +1,95 @@
+﻿@model MyNodes.WebController.ViewModels.FirstRun.ExternalDatabaseViewModel
+
+@{
+    Layout = "_EmptyLayout";
+    ViewBag.Title = "First Run";
+}
+
+<br />
+<div class="ui container">
+
+    <h2>@ViewBag.Title</h2>
+
+
+    <div class="ui ordered steps">
+        <div class="active step">
+            <div class="content">
+                <div class="title">Database</div>
+                <div class="description">Configure database</div>
+            </div>
+        </div>
+        <div class="step">
+            <div class="content">
+                <div class="title">Gateway</div>
+                <div class="description">Connect to gateway</div>
+            </div>
+        </div>
+        <div class="step">
+            <div class="content">
+                <div class="title">User</div>
+                <div class="description">Create admin profile</div>
+            </div>
+        </div>
+    </div>
+
+    <div class="ui divider"></div>
+
+
+    <div class="ui two column stackable centered grid">
+
+        <div class="column">
+            <div class="ui raised segments">
+                <div class="ui secondary attached segment">
+                    <h4>Database</h4>
+                </div>
+
+                <div class="ui basic segment">
+                    <h2 class="ui header">External database</h2>
+                </div>
+
+                <form asp-action="EthernetGateway" asp-anti-forgery="true" class="ui form">
+                    <div class="ui basic segment">
+         
+                            <div class="field">
+                                <label asp-for="ConnectionString"></label>
+                                <input asp-for="ConnectionString">
+                            </div>
+                            <div class="validation" asp-validation-summary="ValidationSummary.All"></div>
+                    </div>
+
+                    <div class="ui center aligned attached segment">
+                        <div class="ui buttons">
+                            <a asp-action="Database" asp-route-id="" class="ui button">Cancel</a>
+                            <input type="submit" value="Connect" class="ui button primary" />
+                        </div>
+                    </div>
+                </form>
+
+
+
+
+            </div>
+        </div>
+
+    </div>
+</div>
+
+
+<br />
+<br/>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 14
-VisualStudioVersion = 14.0.24720.0
+# Visual Studio 15
+VisualStudioVersion = 15.0.26228.4
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Libs", "Libs", "{09A986A2-EC14-4132-BFA7-8FC1A66C3AB9}"
 EndProject
@@ -9,7 +9,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Devices", "Devices", "{324B
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "SoftwareNodes", "SoftwareNodes", "{6A5AFE86-9DF4-4CBD-ACFB-FA9B04BD9A7A}"
 EndProject
-Project("{8BB2217D-0F2D-49D1-97BC-3654ED321F3B}") = "WebController", "WebController\WebController.xproj", "{D5991617-7252-4C2F-B1E2-C8504339F24C}"
+Project("{8BB2217D-0F2D-49D1-97BC-3654ED321F3B}") = "WebController", "WebController\WebController.csproj", "{D5991617-7252-4C2F-B1E2-C8504339F24C}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Utils", "Libs\Utils\Utils.csproj", "{9762FEE1-2655-4FEE-BDE4-390244CFA16A}"
 EndProject
@@ -46,6 +46,8 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Gateways.MySensors", "Libs\Gateways.MySensors\Gateways.MySensors.csproj", "{C323003B-AFA8-464A-B3CA-18F07DD6CDEE}"
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Devices.Ping", "Devices\Devices.Ping\Devices.Ping.vcxproj", "{FB585800-9B3F-4CF1-8191-ACF5D5635E6C}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WebApp", "WebApp\WebApp.csproj", "{45173560-0DC7-4652-B22D-0A276AFAAABC}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -335,6 +337,22 @@ Global
 		{FB585800-9B3F-4CF1-8191-ACF5D5635E6C}.Release|x64.Build.0 = Release|x64
 		{FB585800-9B3F-4CF1-8191-ACF5D5635E6C}.Release|x86.ActiveCfg = Release|Win32
 		{FB585800-9B3F-4CF1-8191-ACF5D5635E6C}.Release|x86.Build.0 = Release|Win32
+		{45173560-0DC7-4652-B22D-0A276AFAAABC}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{45173560-0DC7-4652-B22D-0A276AFAAABC}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{45173560-0DC7-4652-B22D-0A276AFAAABC}.Debug|ARM.ActiveCfg = Debug|Any CPU
+		{45173560-0DC7-4652-B22D-0A276AFAAABC}.Debug|ARM.Build.0 = Debug|Any CPU
+		{45173560-0DC7-4652-B22D-0A276AFAAABC}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{45173560-0DC7-4652-B22D-0A276AFAAABC}.Debug|x64.Build.0 = Debug|Any CPU
+		{45173560-0DC7-4652-B22D-0A276AFAAABC}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{45173560-0DC7-4652-B22D-0A276AFAAABC}.Debug|x86.Build.0 = Debug|Any CPU
+		{45173560-0DC7-4652-B22D-0A276AFAAABC}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{45173560-0DC7-4652-B22D-0A276AFAAABC}.Release|Any CPU.Build.0 = Release|Any CPU
+		{45173560-0DC7-4652-B22D-0A276AFAAABC}.Release|ARM.ActiveCfg = Release|Any CPU
+		{45173560-0DC7-4652-B22D-0A276AFAAABC}.Release|ARM.Build.0 = Release|Any CPU
+		{45173560-0DC7-4652-B22D-0A276AFAAABC}.Release|x64.ActiveCfg = Release|Any CPU
+		{45173560-0DC7-4652-B22D-0A276AFAAABC}.Release|x64.Build.0 = Release|Any CPU
+		{45173560-0DC7-4652-B22D-0A276AFAAABC}.Release|x86.ActiveCfg = Release|Any CPU
+		{45173560-0DC7-4652-B22D-0A276AFAAABC}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

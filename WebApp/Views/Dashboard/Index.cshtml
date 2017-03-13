@@ -1,0 +1,284 @@
+﻿@{
+    if (ViewBag.panelId == "Home")
+    {
+        ViewBag.Title = "Dashboard";
+    }
+    else
+    {
+        ViewBag.Title = ViewBag.PanelName;
+    }
+}
+
+
+<div class="ui container">
+
+    @if (ViewBag.panelId == "Home")
+    {
+        <a asp-controller="NodeEditor" asp-action="Index" class="ui button right floated">Editor</a>
+
+    }
+    else
+    {
+        <a asp-controller="NodeEditor" asp-action="Panel" asp-route-id="@ViewBag.panelId" class="ui button right floated">Editor</a>
+    }
+
+
+
+
+    <h2>@ViewBag.Title</h2>
+    <p>
+        @if (ViewBag.panelId == "Home")
+        {
+            <a asp-action="List">Panels</a>
+        }
+        else
+        {
+            @:<
+            <a asp-controller="Dashboard" asp-action="Index">Dashboard</a>
+            @:<
+            <a asp-action="List">Panels</a>
+
+        }
+    </p>
+    <div class="ui divider"></div>
+
+    <div class="ui message" id="empty-message" style="display: none">
+        <p>
+            @if (ViewBag.panelId == "Home")
+            {
+                @: Dashboard is empty. To create controls, go to the
+                <a asp-controller="NodeEditor" asp-action="Index">Node Editor</a>@:.
+            }
+            else
+            {
+                @: Panel is empty. To create controls, go to the
+                <a asp-controller="NodeEditor" asp-action="Panel" asp-route-id="@ViewBag.panelId">Node Editor</a>@:.
+            }
+        </p>
+    </div>
+
+
+
+    <div class="ui stackable centered grid" id="panelsContainer">
+    </div>
+
+</div>
+<br />
+
+
+
+
+<script id="panelTemplate" type="text/x-handlebars-template">
+    <div class="column" id="panel-{{PanelId}}" style="width:360px; max-width:360px">
+        <div class="ui raised segments">
+
+            <div class="ui secondary clearing segment">
+                <div class="ui two column grid">
+                    <div class="fourteen wide column">
+                        <b><span id="panelTitle-{{PanelId}}"></span></b>
+                    </div>
+                    <div class="two wide right aligned column">
+                        <i class="square outline icon" id="activity-{{PanelId}}"></i>
+                    </div>
+                </div>
+            </div>
+
+            <div id="uiContainer-{{PanelId}}" class="content">
+            </div>
+        </div>
+    </div>
+</script>
+
+
+
+
+<script id="labelTemplate" type="text/x-handlebars-template">
+    <div class="ui attached clearing segment" id="node-{{Id}}">
+        <span id="labelName-{{Id}}"></span>
+        <div class="ui right floated basic disabled button nonbutton">
+            <span class="ui blue basic label" id="labelValue-{{Id}}"></span>
+        </div>
+    </div>
+</script>
+
+<script id="stateTemplate" type="text/x-handlebars-template">
+    <div class="ui attached clearing segment" id="node-{{Id}}">
+        <span id="stateName-{{Id}}"></span>
+        <div class="ui right floated basic disabled button nonbutton">
+            <i class="big blue toggle on icon" id="state-on-{{Id}}" style="display:none"></i>
+            <i class="big toggle off icon" id="state-off-{{Id}}" style="display:none"></i>
+            <i class="big red toggle off icon" id="state-null-{{Id}}" style="display:none"></i>
+        </div>
+    </div>
+</script>
+
+
+<script id="textBoxTemplate" type="text/x-handlebars-template">
+    <div class="ui attached clearing segment" id="node-{{Id}}">
+        <span id="textBoxName-{{Id}}"></span>
+        <div class="ui form text-box-form">
+            <div class="ui field">
+                <div class="ui small action input">
+                    <input type="text" id="textBoxText-{{Id}}">
+                    <button type="button" class="ui small button" id="textBoxSend-{{Id}}">Send</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</script>
+
+
+<script id="logTemplate" type="text/x-handlebars-template">
+    <div class="ui attached clearing segment" id="node-{{Id}}">
+        <span id="logName-{{Id}}"></span>
+        <button type="button" class="ui right floated tiny button" id="clear-log-{{Id}}">Clear</button>
+        <br />
+        <div class="ui segment" style="overflow-y: scroll; height: 150px;" id="log-{{Id}}"></div>
+    </div>
+</script>
+
+
+<script id="progressTemplate" type="text/x-handlebars-template">
+    <div class="ui attached clearing segment" id="node-{{Id}}">
+        <span id="progressName-{{Id}}"></span>
+        <div class="ui blue small progress" id="progressBar-{{Id}}">
+            <div class="bar">
+                <div class="progress"></div>
+            </div>
+        </div>
+    </div>
+</script>
+
+<script id="buttonTemplate" type="text/x-handlebars-template">
+    <div class="ui attached clearing segment" id="node-{{Id}}">
+        <button class="ui right floated small button" id="button-{{Id}}">
+            &nbsp <span id="buttonName-{{Id}}"></span> &nbsp
+        </button>
+    </div>
+</script>
+
+<script id="toggleButtonTemplate" type="text/x-handlebars-template">
+    <div class="ui attached clearing segment" id="node-{{Id}}">
+        <button class="ui right floated small toggle button" id="button-{{Id}}">
+            &nbsp <span id="buttonName-{{Id}}"></span> &nbsp
+        </button>
+    </div>
+</script>
+
+<script id="switchTemplate" type="text/x-handlebars-template">
+    <div class="ui attached clearing segment" id="node-{{Id}}">
+        <span id="switchName-{{Id}}"></span>
+        <div class="ui right floated basic  button nonbutton">
+            <label class="switch">
+                <input type="checkbox" class="switch-input" id="switch-{{Id}}">
+                <span class="switch-label" data-on="On" data-off="Off"></span>
+                <span class="switch-handle"></span>
+            </label>
+        </div>
+    </div>
+</script>
+
+<script id="sliderTemplate" type="text/x-handlebars-template">
+    <div class="ui attached clearing segment" id="node-{{Id}}">
+        <span id="sliderName-{{Id}}"></span>
+        <br />
+        <div id="slider-{{Id}}"></div>
+    </div>
+</script>
+
+
+<script id="rgbSlidersTemplate" type="text/x-handlebars-template">
+    <div class="ui attached clearing segment" id="node-{{Id}}">
+        <span id="sliderName-{{Id}}"></span>
+        <br />
+        <div id="slider-{{Id}}-r" class="spacebottom"></div>
+        <div id="slider-{{Id}}-g" class="spacebottom"></div>
+        <div id="slider-{{Id}}-b"></div>
+    </div>
+</script>
+
+<script id="rgbwSlidersTemplate" type="text/x-handlebars-template">
+    <div class="ui attached clearing segment" id="node-{{Id}}">
+        <span id="sliderName-{{Id}}"></span>
+        <br />
+        <div id="slider-{{Id}}-r" class="spacebottom"></div>
+        <div id="slider-{{Id}}-g" class="spacebottom"></div>
+        <div id="slider-{{Id}}-b" class="spacebottom"></div>
+        <div id="slider-{{Id}}-w"></div>
+    </div>
+</script>
+
+
+<script id="chartTemplate" type="text/x-handlebars-template">
+    <div class="ui attached clearing segment" id="node-{{Id}}">
+        <div class="ui mini right floated basic buttons">
+            @*<button type="button" class="ui button" id="chart-clear-{{Id}}">Clr</button>*@
+            <button type="button" class="ui button" id="chart-style-{{Id}}">Style</button>
+            <button type="button" class="ui button" id="chart-all-{{Id}}">All</button>
+            <button type="button" class="ui button" id="chart-now-{{Id}}">Now</button>
+            <a href="/Dashboard/Chart/{{Id}}" class="ui button" id="chart-open-{{Id}}">Open</a>
+        </div>
+        <span id="chartName-{{Id}}"></span>
+        <br />
+        <br />
+        <div id="chart-panel-{{Id}}-">
+            <div id="chart-body-{{Id}}"></div>
+        </div>
+
+    </div>
+</script>
+
+
+<script id="timerTemplate" type="text/x-handlebars-template">
+    <div class="ui attached clearing segment" id="node-{{Id}}">
+        <span id="timer-name-{{Id}}"></span>
+        <div class="ui small right floated basic buttons">
+            <a href="/UITimer/Tasks/{{Id}}" class="ui button" id="timer-open-{{Id}}">Open</a>
+        </div>
+    </div>
+</script>
+
+
+<script id="voiceTemplate" type="text/x-handlebars-template">
+    <div class="ui attached clearing segment" id="node-{{Id}}">
+        <span id="voiceName-{{Id}}"></span>
+    </div>
+</script>
+
+<script id="audioTemplate" type="text/x-handlebars-template">
+    <div class="ui attached clearing segment" id="node-{{Id}}">
+        <span id="audioName-{{Id}}"></span>
+    </div>
+</script>
+
+@*html template for state switch UI node*@
+<script id="stateSwitchTemplate" type="text/x-handlebars-template">
+    <div class="ui attached clearing segment" id="node-{{Id}}">
+        <span id="stateSwitchName-{{Id}}"></span>
+        <div class="ui right floated basic  button nonbutton">
+            <label class="switch">
+                <input type="checkbox" class="switch-input" id="stateSwitch-{{Id}}">
+                <span class="switch-label" data-on="On" data-off="Off"></span>
+                <span class="switch-handle"></span>
+            </label>
+        </div>
+    </div>
+</script>
+
+@section styles{
+    <link href="~/lib/vis/dist/vis.min.css" rel="stylesheet" />
+}
+
+
+@section scripts
+{
+    <script>
+        var this_panel_id = "@ViewBag.panelId";
+    </script>
+    <script src="~/lib/vis/dist/vis.min.js"></script>
+
+    <script src="~/js/mysensors.js"></script>
+
+    <script asp-src-include="~/js/dashboard/*.js"></script>
+}
+

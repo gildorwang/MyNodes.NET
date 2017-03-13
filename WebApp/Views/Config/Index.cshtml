@@ -1,0 +1,267 @@
+﻿@{
+    ViewBag.Title = "Config";
+}
+
+<br />
+<div class="ui container">
+
+    <h2>@ViewBag.Title</h2>
+
+    <div>
+        @*<a asp-controller="Config" asp-action="Gateway">Gateway</a> |
+            <a asp-controller="Config" asp-action="SerialPort">Serial Port</a>*@
+        <br />
+    </div>
+    <div class="ui divider"></div>
+
+    <div class="ui two column centered stackable grid" id="main-content" style="display: none;">
+
+
+        <div class="column">
+            <div class="ui raised segments">
+                <div class="ui secondary clearing segment">
+                    <b>Nodes Engine</b>
+                </div>
+
+                <div class="ui attached clearing segment">
+                    State
+                    <div class="ui right floated basic disabled button nonbutton">
+                        <span class="ui blue basic label" id="nodes-engine-state">-</span>
+                    </div>
+                </div>
+
+                <div class="ui basic segment">
+                    Nodes
+                    <div class="ui right floated basic disabled button nonbutton">
+                        <span class="ui blue basic label" id="nodes-engine-nodes-count">-</span>
+                    </div>
+                </div>
+                <div class="ui basic segment">
+                    &nbsp;&nbsp;&nbsp;&nbsp; Panels
+                    <div class="ui right floated basic disabled button nonbutton">
+                        <span class="ui blue basic label" id="nodes-engine-panels-count">-</span>
+                    </div>
+                </div>
+                <div class="ui basic segment">
+                    &nbsp;&nbsp;&nbsp;&nbsp; Inputs/Outputs
+                    <div class="ui right floated basic disabled button nonbutton">
+                        <span class="ui blue basic label" id="nodes-engine-io-count">-</span>
+                    </div>
+                </div>
+                <div class="ui basic segment">
+                    &nbsp;&nbsp;&nbsp;&nbsp; UI
+                    <div class="ui right floated basic disabled button nonbutton">
+                        <span class="ui blue basic label" id="nodes-engine-ui-count">-</span>
+                    </div>
+                </div>
+                <div class="ui basic segment">
+                    &nbsp;&nbsp;&nbsp;&nbsp; Hardware
+                    <div class="ui right floated basic disabled button nonbutton">
+                        <span class="ui blue basic label" id="nodes-engine-hardware-count">-</span>
+                    </div>
+                </div>
+                <div class="ui basic segment">
+                    &nbsp;&nbsp;&nbsp;&nbsp; Other
+                    <div class="ui right floated basic disabled button nonbutton">
+                        <span class="ui blue basic label" id="nodes-engine-other-count">-</span>
+                    </div>
+                </div>
+                <div class="ui basic segment">
+                    Links
+                    <div class="ui right floated basic disabled button nonbutton">
+                        <span class="ui blue basic label" id="nodes-engine-links-count">-</span>
+                    </div>
+                </div>
+                <div class="ui basic clearing segment">
+                    <div class="ui divider"></div>
+                    <button class="ui right floated small button" id="nodes-engine-delete-nodes">Delete all nodes</button>
+                    <a asp-controller="Config" asp-action="NodeEditor" class="ui right floated small button">Node Editor Settings</a>
+                </div>
+
+                <div class="ui attached clearing segment">
+                    <button class="ui right floated blue button connectbutton" id="nodes-engine-start">Start</button>
+                    <button class="ui right floated button connectbutton" id="nodes-engine-stop" style="display: none">Stop</button>
+                    <a asp-controller="Config" asp-action="NodesEngine" class="ui right floated button">Settings</a>
+                </div>
+            </div>
+        </div>
+
+
+        <div class="column">
+            <div class="ui raised segments">
+                <div class="ui secondary clearing segment">
+                    <b>Gateway</b>
+                </div>
+
+                @*<div class="ui attached clearing segment">
+                        <div class="ui toggle checkbox">
+                            <input type="checkbox" name="use-serial-gateway">
+                            <label>Connect Gateway</label>
+                        </div>
+                    </div>*@
+
+
+                @*<div class="ui attached clearing segment" id="gateway-hardware-online">
+                        Gateway hardware is connected
+                        <div class="ui right floated basic disabled button nonbutton">
+                            <i class="big blue toggle on icon"></i>
+                        </div>
+                    </div>
+                    <div class="ui attached clearing segment" id="gateway-hardware-offline">
+                        Gateway hardware is disconnected
+                        <div class="ui right floated basic disabled button nonbutton">
+                            <i class="big red toggle off icon"></i>
+                        </div>
+                    </div>*@
+
+                <div class="ui attached clearing segment">
+                    State
+                    <div class="ui right floated basic disabled button nonbutton">
+                        <span class="ui blue basic label" id="gateway-state">-</span>
+                    </div>
+                </div>
+
+                <div class="ui basic segment">
+                    Nodes
+                    <div class="ui right floated basic disabled button nonbutton">
+                        <span class="ui blue basic label" id="gateway-nodes-count">-</span>
+                    </div>
+                </div>
+                <div class="ui basic segment">
+                    Sensors
+                    <div class="ui right floated basic disabled button nonbutton">
+                        <span class="ui blue basic label" id="gateway-sensors-count">-</span>
+                    </div>
+                </div>
+                <div class="ui basic clearing segment">
+                    <div class="ui divider"></div>
+                    <button class="ui right floated small button" id="gateway-delete-nodes">Delete all nodes</button>
+                </div>
+
+
+                <div class="ui attached clearing segment">
+
+                    <div class="ui top attached tabular menu">
+                        <a class="item active" data-tab="first">Serial</a>
+                        <a class="item" data-tab="second">Ethernet</a>
+                    </div>
+                    <div class="ui bottom attached tab clearing segment active" data-tab="first">
+                        <button class="ui right floated blue button connectbutton" id="serial-gateway-connect">Connect</button>
+                        <button class="ui right floated button connectbutton" id="serial-gateway-disconnect" style="display: none">Disconnect</button>
+                        <a asp-controller="Config" asp-action="SerialGateway" class="ui right floated button">Settings</a>
+                    </div>
+                    <div class="ui bottom attached tab clearing segment" data-tab="second">
+                        <button class="ui right floated blue button connectbutton" id="ethernet-gateway-connect">Connect</button>
+                        <button class="ui right floated button connectbutton" id="ethernet-gateway-disconnect" style="display: none">Disconnect</button>
+                        <a asp-controller="Config" asp-action="EthernetGateway" class="ui right floated button">Settings</a>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+
+
+        <div class="column">
+            <div class="ui raised segments">
+                <div class="ui secondary clearing segment">
+                    <b>Web Server</b>
+                </div>
+
+                <div class="ui attached clearing segment">
+                    State
+                    <div class="ui right floated basic disabled button nonbutton">
+                        <span class="ui blue basic label" id="nodes-engine-state">Started</span>
+                    </div>
+                </div>
+
+                <div class="ui basic segment">
+                    Registered Users
+                    <div class="ui right floated basic disabled button nonbutton">
+                        <span class="ui blue basic label" id="users-count">-</span>
+                    </div>
+                </div>
+                <div class="ui basic clearing segment">
+                    <div class="ui divider"></div>
+                    <a asp-controller="User" asp-action="List" class="ui right floated button">Edit users</a>
+                    <a asp-action="Rules" class="ui right floated button">Rules</a>
+                </div>
+
+                <div class="ui attached clearing segment">
+                    <a asp-action="Server" class="ui right floated button">Server Settings</a>
+                    <a asp-action="Logs" class="ui right floated button">Logs</a>
+                    <a asp-action="Console" class="ui right floated button">Console</a>
+                </div>
+            </div>
+        </div>
+
+
+
+
+    </div>
+
+    <br />
+    <br />
+
+
+    <div class="ui modal" id="gateway-delete-nodes-nonfirm">
+        <div class="header">
+            Delete all hardware nodes
+        </div>
+        <div class="image content">
+            <div class="ui image">
+                @*<i class="massive settings icon"></i>*@
+                <i class="red massive warning sign icon"></i>
+            </div>
+            <div class="description">
+                Deleting hardware nodes from the database will release their ID.
+                After that, you will need to turn on all
+                previously registered nodes to reinitialize the database.
+                If this is not done, any new node will take the ID
+                of the other device, and there is a conflict! <br /><br />
+                If there is a conflict, you should:<br />
+                1. Turn off all nodes.<br />
+                2. Delete all nodes from the database.<br />
+                3. Erase EEPROM on conflicty nodes and reflash again firmwares.<br />
+                4. Turn on all non-conflicting nodes.<br />
+                5. Turn on conflicty nodes. <br /><br />
+                Again. After deleting nodes from the database,
+                do not run the new nodes (which has not received the ID previously)
+                before turn on all known nodes!
+            </div>
+        </div>
+        <div class="actions">
+            <div class="ui cancel button">Cancel</div>
+            <div class="ui red approve button">Delete</div>
+        </div>
+    </div>
+
+
+
+    <div class="ui modal" id="nodes-engine-delete-nodes-confirm">
+        <div class="header">Delete all nodes</div>
+        <div class="image content">
+            <div class="ui image">
+                <i class="massive settings icon"></i>
+            </div>
+            <div class="description">
+                Are you sure you want to delete all nodes and links?
+            </div>
+        </div>
+        <div class="actions">
+            <div class="ui cancel button">Cancel</div>
+            <div class="ui red approve button">Delete</div>
+        </div>
+    </div>
+
+</div>
+
+@section scripts
+{
+    <script src="~/js/mysensors.js"></script>
+    <script src="~/js/config-page.js"></script>
+
+    <script>
+        $('.menu .item').tab();
+    </script>
+
+}

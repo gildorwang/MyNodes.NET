@@ -1,0 +1,37 @@
+﻿@using MyNodes.Nodes
+@model IEnumerable<MyNodes.Nodes.PanelNode>
+
+@{
+    ViewBag.Title = "Panels";
+}
+
+<br />
+<div class="ui container">
+
+    <h2>@ViewBag.Title</h2>
+
+    <p>
+        < <a asp-controller="Dashboard" asp-action="Index">Dashboard</a>
+    </p>
+    <div class="ui divider"></div>
+
+
+
+    <div style="padding-left: 20px">
+        <h4>
+            @if (ViewBag.showMainPanel)
+            {
+                <a asp-action="Panel" asp-route-id="Main">Main Panel</a><br/>
+                <div class="ui divider"></div>
+            }
+
+            @foreach (PanelNode panel in Model)
+            {
+                <a asp-action="Panel" asp-route-id="@panel.Id">@panel.Settings["Name"].Value</a><br/>
+                <div class="ui divider"></div>
+            }
+        </h4>
+
+    </div>
+
+</div>

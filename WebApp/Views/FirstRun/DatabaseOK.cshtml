@@ -1,0 +1,81 @@
+﻿@{
+    Layout = "_EmptyLayout";
+    ViewBag.Title = "First Run";
+}
+
+<br />
+<div class="ui container">
+
+    <h2>@ViewBag.Title</h2>
+
+
+    <div class="ui ordered steps">
+        <div class="active completed step">
+            <div class="content">
+                <div class="title">Database</div>
+                <div class="description">Configure database</div>
+            </div>
+        </div>
+        <div class="step">
+            <div class="content">
+                <div class="title">Gateway</div>
+                <div class="description">Connect to gateway</div>
+            </div>
+        </div>
+        <div class="step">
+            <div class="content">
+                <div class="title">User</div>
+                <div class="description">Create admin profile</div>
+            </div>
+        </div>
+    </div>
+
+    <div class="ui divider"></div>
+
+
+    <div class="ui two column stackable centered grid">
+
+        <div class="column">
+            <div class="ui raised segments">
+                <div class="ui secondary attached segment">
+                    <h4>Database</h4>
+                </div>
+
+                <div class="ui attached segment">
+                    <h2 class="ui header">Database is configured</h2>
+                    Database connection is established
+                    <br />
+                </div>
+
+                <div class="ui center aligned attached segment">
+                    <div class="ui buttons">
+                        <a asp-action="Gateway" class="ui primary button">OK</a>
+                    </div>
+                </div>
+
+
+            </div>
+        </div>
+
+    </div>
+</div>
+
+
+<br />
+<br/>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

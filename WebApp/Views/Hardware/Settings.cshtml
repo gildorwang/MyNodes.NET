@@ -1,0 +1,172 @@
+﻿@using MyNodes.Gateways.MySensors
+@model MyNodes.Gateways.MySensors.Node
+
+@{
+    ViewBag.Title = $"Node{Model.Id} Settings";
+}
+
+<br />
+<div class="ui container">
+
+
+    <h2>@ViewBag.Title</h2>
+
+    <p>
+        < <a asp-action="Index">Hardware Nodes</a>
+        < <a asp-action="SettingsSelect">Settings</a>
+    </p>
+    <div class="ui divider"></div>
+
+    <div class="ui two column stackable centered grid">
+
+        <div class="column">
+            <div class="ui raised segments">
+                <div class="ui secondary clearing segment">
+                    <b>Node @Model.Id</b>
+                    <a asp-action="Remove" asp-route-id="@Model.Id" class="ui small right floated button">Delete node</a>
+
+                </div>
+
+                    <form asp-action="Settings" asp-anti-forgery="true" class="ui form">
+                        <div class="ui attached segment">
+
+                            <div class="validation" asp-validation-summary="ValidationSummary.All"></div>
+
+                            <input type="hidden" asp-for="Id" />
+
+                            <div class="inline field">
+                                Node name:
+                                <input type="text" name="nodename" value="@Model.name">
+                            </div>
+
+
+                            @foreach (var sensor in Model.sensors)
+                            {
+                                <div class="ui segments">
+
+                                    <div class="ui segment">
+                                        <div class="inline field">
+                                            <b>Sensor @sensor.sensorId @*- @sensor.GetSimpleName1()*@</b>
+                                            Description:
+                                            <input type="text" name="sensordescription-@sensor.sensorId" value="@sensor.description">
+                                        </div>
+                                    </div>
+
+                                    @*<div class="ui segment">
+                        <div class="inline field">
+                            Description:
+                            <input type="text" name="sensordescription-@sensor.sensorId" value="@sensor.description">
+                        </div>
+                    </div>*@
+
+                                    <div class="ui segment">
+                                        <div class="ui toggle checkbox">
+                                            <input type="checkbox" name="invertData-@sensor.sensorId"
+                                                   @if (sensor.invertData)
+                                                   {
+                                                       @: checked
+                                                   }>
+                                            <input type="hidden" name="invertData-@sensor.sensorId" value="false">
+                                            <label>Invert data</label>
+                                        </div>
+                                    </div>
+
+                                    <div class="ui segment">
+
+                                        <div class="ui toggle checkbox">
+                                            <input type="checkbox" name="remapData-@sensor.sensorId" class="remapData-switch" panel-id="@sensor.sensorId"
+                                                   @if (sensor.remapEnabled)
+                                                   {
+                                                       @: checked
+                                                   }>
+                                            <input type="hidden" name="remapData-@sensor.sensorId" value="false">
+                                            <label>Remap data</label>
+                                        </div>
+
+                                        <div id="remapPanel-@sensor.sensorId" style="display: none">
+                                            <br/>
+                                            <div class="fields">
+                                                <div class="ui  field">
+                                                    From min
+                                                    <input type="text" name="remapFromMin-@sensor.sensorId" value="@sensor.remapFromMin">
+                                                </div>
+                                                <div class="ui  field">
+                                                    From max
+                                                    <input type="text" name="remapFromMax-@sensor.sensorId" value="@sensor.remapFromMax">
+                                                </div>
+                                            </div>
+
+                                            <div class="fields">
+                                                <div class="ui  field">
+                                                    To min
+                                                    <input type="text" name="remapToMin-@sensor.sensorId" value="@sensor.remapToMin">
+                                                </div>
+                                                <div class="ui  field">
+                                                    To max
+                                                    <input type="text" name="remapToMax-@sensor.sensorId" value="@sensor.remapToMax">
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+
+
+                                </div>
+                            }
+
+
+                        </div>
+
+
+                        <div class="ui center aligned attached segment">
+                            <div class="ui buttons">
+                                <a asp-action="Index" class="ui button">Cancel</a>
+                                <input type="submit" value="Save changes" class="ui button primary" />
+                            </div>
+
+
+
+                        </div>
+                    </form>
+
+            </div>
+
+
+        </div>
+    </div>
+        </div>
+
+
+        <br />
+
+        @section scripts
+{
+
+
+            <script src="~/js/mysensors.js"></script>
+
+            <script>
+
+                var fade = 300;
+
+
+                $(".remapData-switch").click(function () {
+                    var id = $(this).attr("panel-id");
+                    if ($(this).is(":checked")) {
+                        $('#remapPanel-' + id).fadeIn(fade);
+                    } else {
+                        $('#remapPanel-' + id).fadeOut(fade);
+                    }
+                });
+
+
+                switches = $(".remapData-switch");
+                for (var i = 0; i < switches.length; i++) {
+                    if (switches[i].checked) {
+                        var id = switches[i].getAttribute("panel-id");
+                        if (id != null)
+                            $('#remapPanel-' + id).show();
+                    }
+                }
+
+            </script>
+        }

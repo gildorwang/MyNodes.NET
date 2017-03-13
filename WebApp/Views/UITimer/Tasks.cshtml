@@ -1,0 +1,122 @@
+﻿@using MyNodes.Nodes
+@model IEnumerable<MyNodes.Nodes.UITimerTask>
+
+
+@{
+    ViewBag.Title = ViewBag.Name;
+}
+
+
+
+    <br />
+<div class="ui container">
+
+
+    <h2>@ViewBag.Title</h2>
+    <p>
+        < <a asp-controller="Dashboard" asp-action="Index">Dashboard</a>
+    </p>
+    <div class="ui divider"></div>
+
+    <div class="ui raised segments">
+        <div class="ui secondary clearing segment">
+            <b>Tasks</b>
+            <a asp-action="New" asp-route-id="@ViewBag.NodeId" class="ui right floated small primary button">New Task</a>
+        </div>
+        @if (Model == null || Model.Count() == 0)
+        {
+            <div class="ui attached segment">
+                No tasks
+            </div>
+        }
+        else
+        {
+            foreach (var task in Model)
+            {
+                <div class="ui attached clearing segment">
+
+
+                    <h4>
+                        Task @task.Id
+                        @if (task.Description != null)
+                        {
+                            @: : @task.Description
+                        }
+                    </h4>
+                    <div class="ui right floated basic tiny buttons">
+                        @if (!task.IsCompleted)
+                        {
+                            if (task.Enabled)
+                            {
+                                <a asp-action="Disable" class="ui button" asp-route-id="@ViewBag.NodeId" asp-route-id2="@task.Id"><b>Disable</b></a>
+                            }
+                            else
+                            {
+                                <a asp-action="Enable" class="ui button" asp-route-id="@ViewBag.NodeId" asp-route-id2="@task.Id"><b>Enable</b></a>
+                            }
+
+                            if (task.IsRepeating)
+                            {
+                                <a asp-action="ExecuteNow" class="ui button" asp-route-id="@ViewBag.NodeId" asp-route-id2="@task.Id"><b>Restart</b></a>
+                            }
+                            else
+                            {
+                                <a asp-action="ExecuteNow" class="ui button" asp-route-id="@ViewBag.NodeId" asp-route-id2="@task.Id"><b>Execute</b></a>
+                            }
+                        }
+                        else
+                        {
+                            if (task.IsRepeating)
+                            {
+                                <a asp-action="ExecuteNow" class="ui button" asp-route-id="@ViewBag.NodeId" asp-route-id2="@task.Id"><b>Restart</b></a>
+                            }
+                            else
+                            {
+                                <a asp-action="ExecuteNow" class="ui button" asp-route-id="@ViewBag.NodeId" asp-route-id2="@task.Id"><b>Execute</b></a>
+                            }
+                        }
+                        <a asp-action="Edit" class="ui button" asp-route-id="@ViewBag.NodeId" asp-route-id2="@task.Id"><b>Edit</b></a>
+                        <a asp-action="Remove" class="ui button" asp-route-id="@ViewBag.NodeId" asp-route-id2="@task.Id"><b>Delete</b></a>
+                    </div>
+
+                    @if (task.IsCompleted)
+                    {
+                        <span class="ui tiny green ribbon label">COMPLETED</span>
+                    }
+                    else if (!task.Enabled)
+                    {
+                        <span class="ui tiny ribbon label">DISABLED</span>
+                    }
+                    else
+                    {
+                        <span class="ui tiny blue ribbon label">ACTIVE</span>
+                    }
+                    <br />
+                    <br />
+
+                    Execution date: @task.ExecutionDate<br>
+                    Set value:@task.ExecutionValue<br>
+                    @if (task.IsRepeating)
+                    {
+                        @:Repeat values: @task.RepeatingAValue / @task.RepeatingBValue<br>
+                        @:Repeat interval: @task.RepeatingInterval<br>
+                        @:Executions done:@task.RepeatingDoneCount<br>
+                        if (task.RepeatingNeededCount > 0)
+                        {
+                            @:Executions left:@(task.RepeatingNeededCount - task.RepeatingDoneCount)<br>
+                        }
+
+                    }
+                </div>
+            }
+            <div class="ui right aligned attached segment">
+                <div class="ui small buttons">
+                    <a asp-action="RemoveAll" asp-route-id="@ViewBag.NodeId" class="ui button">Delete all</a>
+                    <a asp-action="RemoveCompleted" asp-route-id="@ViewBag.NodeId" class="ui primary button">Delete completed</a>
+                </div>
+            </div>
+        }
+    </div>
+</div>
+
+<br />

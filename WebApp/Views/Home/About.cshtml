@@ -1,0 +1,49 @@
+﻿@{
+    ViewData["Title"] = "About";
+}
+
+
+<br />
+<div class="body-content" style="visibility: hidden;">
+
+    <br />
+
+    <div class="ui container">
+        <div class="ui segment">
+            <img class="ui fluid image" src="~/images/logos/MyNodes_Banner_Small.jpg">
+
+        </div>
+
+        <h1>Web Controller</h1>
+
+        <p>
+            Version: @ViewBag.Version
+        </p
+>
+        <div class="ui divider"></div>
+        Site: <a href="http://www.mynodes.net"> www.MyNodes.net</a><br />
+        Source: <a href="https://github.com/derwish-pro/MyNodes.NET"> github.com/derwish-pro/MyNodes.NET</a><br />
+        Mail to: <a href="mailto:info@MyNodes.net">info@MyNodes.net</a><br />
+
+
+    </div>
+</div>
+
+@section scripts
+{
+    <script>
+
+
+        $(document).ready(function () {
+
+            //logo animation
+            $('.logo-img-home').transition('swing down');
+            $('.logo-text-home').transition('fade');
+
+            //body animation
+            $('.body-content').transition('fade');
+        });
+
+
+    </script>
+}

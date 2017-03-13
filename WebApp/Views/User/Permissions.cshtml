@@ -1,0 +1,147 @@
+﻿@model MyNodes.Users.UserPermissions
+
+@{
+    ViewBag.Title = "User Permissions";
+}
+
+<br />
+<div class="ui container">
+
+    <h2>@ViewBag.Title</h2>
+
+    <p>
+        < <a asp-controller="Config" asp-action="Index">Config</a>
+        < <a asp-action="List">Users</a>
+    </p>
+    <div class="ui divider"></div>
+
+    <div class="ui two column stackable centered grid">
+
+        <div class="column">
+            <div class="ui raised segments">
+                <div class="ui secondary segment">
+                    <h4>@ViewBag.UserName</h4>
+                </div>
+
+                <form asp-action="Permissions" asp-anti-forgery="true" class="ui form">
+                    <input type="hidden" id="userId" name="userId" value="@ViewBag.UserId">
+
+             
+
+                    <div class="ui attached segment">
+                        Select what actions are allowed to user
+                        <br />
+                        <br />
+                        <div class="field">
+                            <div class="ui toggle checkbox">
+                                <input asp-for="DashboardObserver"/>
+                                <label>Dashboard: Observe</label>
+                            </div>
+                        </div>
+
+                        <div class="field">
+                            <div class="ui toggle checkbox">
+                                <input asp-for="DashboardEditor"/>
+                                <label>Dashboard: Control</label>
+                            </div>
+                        </div>
+
+                        <div class="field">
+                            <div class="ui toggle checkbox">
+                                <input asp-for="EditorObserver"/>
+                                <label>Editor: Observe</label>
+                            </div>
+                        </div>
+
+                        <div class="field">
+                            <div class="ui toggle checkbox">
+                                <input asp-for="EditorEditor"/>
+                                <label>Editor: Control</label>
+                            </div>
+                        </div>
+
+                        <div class="field">
+                            <div class="ui toggle checkbox">
+                                <input asp-for="EditorProtectedAccess" />
+                                <label>Editor: Use system nodes</label>
+                            </div>
+                        </div>
+
+                        <div class="field">
+                            <div class="ui toggle checkbox">
+                                <input asp-for="HardwareObserver"/>
+                                <label>Hardware: Observe</label>
+                            </div>
+                        </div>
+
+                        <div class="field">
+                            <div class="ui toggle checkbox">
+                                <input asp-for="LogsObserver"/>
+                                <label>Logs: Observe</label>
+                            </div>
+                        </div>
+
+                        <div class="field">
+                            <div class="ui toggle checkbox">
+                                <input asp-for="LogsEditor"/>
+                                <label>Logs: Clear</label>
+                            </div>
+                        </div>
+
+                        <div class="field">
+                            <div class="ui toggle checkbox">
+                                <input asp-for="ConfigObserver"/>
+                                <label>Config: Observe</label>
+                            </div>
+                        </div>
+
+                        <div class="field">
+                            <div class="ui toggle checkbox">
+                                <input asp-for="ConfigEditor"/>
+                                <label>Config: Change system settings</label>
+                            </div>
+                        </div>
+
+                        <div class="field">
+                            <div class="ui toggle checkbox">
+                                <input asp-for="UsersObserver"/>
+                                <label>Config: Observe users list</label>
+                            </div>
+                        </div>
+
+                        <div class="field">
+                            <div class="ui toggle checkbox">
+                                <input asp-for="UsersEditor"/>
+                                <label>Config: Edit users data and permissions</label>
+                            </div>
+                        </div>
+                        <br/>
+                        User must logout and login again for the changes to take effect
+                        <br/>
+                        <div class="validation" asp-validation-summary="ValidationSummary.All"></div>
+                    </div>
+
+                    <div class="ui center aligned attached segment">
+                        <div class="ui buttons">
+                            <a asp-action="List" class="ui button">Cancel</a>
+                            <input type="submit" value="Save" class="ui button primary"/>
+                        </div>
+                    </div>
+                </form>
+
+            </div>
+        </div>
+
+    </div>
+</div>
+<br />
+<br/>
+
+
+
+
+
+
+
+
+
