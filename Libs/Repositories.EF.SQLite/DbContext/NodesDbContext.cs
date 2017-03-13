@@ -1,4 +1,4 @@
-﻿using Microsoft.Data.Entity;
+﻿using Microsoft.EntityFrameworkCore;
 using MyNodes.Nodes;
 
 namespace MyNodes.Repositories.EF.SQLite

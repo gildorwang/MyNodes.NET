@@ -1,4 +1,4 @@
-﻿using Microsoft.Data.Entity;
+﻿using Microsoft.EntityFrameworkCore;
 using MyNodes.Gateways.MySensors;
 using Node = MyNodes.Gateways.MySensors.Node;
 
