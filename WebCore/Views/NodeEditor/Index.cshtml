@@ -1,0 +1,188 @@
+﻿@using MyNodes.Nodes
+@{
+    Layout = null;
+    ViewBag.Title = "Node Editor";
+
+    int theme = ViewBag.Theme ?? 1;
+}
+
+
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewBag.Title</title>
+
+
+
+    <link href="~/lib/semantic-ui/dist/semantic.min.css" rel="stylesheet" />
+    <link href="~/lib/animate.css/animate.css" rel="stylesheet" />
+    <link rel="stylesheet" type="text/css" href="~/css/litegraph.css">
+    <link rel="stylesheet" type="text/css" href="~/css/litegraph-editor.css">
+    <link rel="stylesheet" type="text/css" href="@Html.Raw($"~/css/litegraph-theme" +theme+".css")">
+    <link rel="stylesheet" type="text/css" href="~/css/site-black.css">
+</head>
+<body>
+
+    <!-- Header Menu-->
+    <div class="ui inverted fixed big borderless main menu">
+        <div class="ui container">
+            <a asp-controller="Home" asp-action="About" class="ui item fadebefore"><h3>MyNodes.NET</h3></a>
+            <div class="right menu">
+
+            </div>
+        </div>
+    </div>
+    <br />
+    <br />
+    <br />
+    <div class="ui container">
+
+        <p>
+            @if (@ViewBag.panelId == "Main")
+            {
+                <a asp-controller="Dashboard" asp-action="Index" target="_top" class="ui inverted small basic right floated button">Dashboard</a>
+                if (ViewBag.split == true)
+                {
+                    <a asp-action="Index" target="_top" class="ui inverted small basic right floated button">Split</a>
+                }
+                else
+                {
+                    <a asp-action="Split" target="_top" class="ui inverted small basic right floated button">Split</a>
+                }
+            }
+            else
+            {
+                <a asp-controller="Dashboard" asp-action="Panel" asp-route-id="@ViewBag.panelId" target="_top" class="ui inverted small basic right floated button">Dashboard</a>
+                if (ViewBag.split == true)
+                {
+                    <a asp-action="Panel" asp-route-id="@ViewBag.panelId" target="_top" class="ui inverted small basic right floated button">Split</a>
+                }
+                else
+                {
+                    <a asp-action="Split" asp-route-id="@ViewBag.panelId" target="_top" class="ui inverted small basic right floated button">Split</a>
+                }
+            }
+
+            <div class="ui tiny buttons">
+                <a asp-controller="NodeEditor" asp-action="Index" class="ui inverted tiny basic button">Main Panel</a>
+                @{
+                    List<PanelNode> panelsStack = ViewBag.panelsStack;
+                    if (panelsStack != null && panelsStack.Any())
+                    {
+                        foreach (PanelNode panel in panelsStack)
+                        {
+                            <a asp-action="Panel" asp-route-id="@panel.Id" class="ui inverted tiny basic button">@panel.Settings["Name"].Value</a>
+                        }
+                    }
+                }
+            </div>
+    </div>
+    <br />
+    <div id="main"></div>
+
+    <div class="ui small modal" id="node-settings-panel">
+        <div class="header" id="node-settings-title"></div>
+        <div class="content">
+            <div class="ui form" id="node-settings-body">
+            </div>
+        </div>
+        <div class="actions">
+            <div class="ui cancel button">
+                Cancel
+            </div>
+            <div class="ui ok blue button">
+                OK
+            </div>
+        </div>
+    </div>
+
+    <div class="ui small modal" id="import-panel">
+        <div class="header" id="import-panel-title"></div>
+        <div class="content" id="import-panel-body">
+            <form class="ui form" name="uploadForm">
+                <div class="fields">
+                    <div class="field">
+                        File: <input type="file" name="uploadFile" id="uploadFile">
+                    </div>
+                </div>
+            </form>
+        </div>
+        <div class="content" id="import-panel-message"></div>
+        <div class="actions">
+            <div class="ui cancel button">
+                Cancel
+            </div>
+        </div>
+    </div>
+
+
+    <div class="ui small modal" id="modal-panel">
+        <div class="header" id="modal-panel-title"></div>
+        <div class="content">
+            <form class="ui form" id="modal-panel-form"></form>
+            <div class="ui message" id="modal-panel-message" style="display: none"></div>
+        </div>
+        <div class="actions">
+            <div class="ui cancel button">Cancel</div>
+            <div class="ui button" id="modal-panel-submit" style="display: none">OK</div>
+        </div>
+    </div>
+
+
+
+
+    <script id="textSettingTemplate" type="text/x-handlebars-template">
+        @*<div class="ui attached basic segment">*@
+        <div class="field">
+            <label> {{Label}} </label>
+            <input type="text" id="node-setting-{{Key}}" value="{{Value}}">
+        </div>
+        @*</div>*@
+    </script>
+
+    <script id="numberSettingTemplate" type="text/x-handlebars-template">
+        @*<div class="ui attached basic segment">*@
+        <div class="field">
+            <label> {{Label}} </label>
+            <input type="number" id="node-setting-{{Key}}" value="{{Value}}">
+        </div>
+        @*</div>*@
+    </script>
+
+    <script id="checkboxSettingTemplate" type="text/x-handlebars-template">
+        @*<div class="ui attached basic segment">*@
+        <div class="field">
+            <div class="ui toggle checkbox">
+                <input type="checkbox" name="public" id="node-setting-{{Key}}" value="true">
+                <label> {{Label}} </label>
+            </div>
+        </div>
+        @*</div>*@
+    </script>
+
+
+
+    <script>
+        //this var used in litegraph.js
+        var this_panel_id = "@ViewBag.panelId";
+        var owner_panel_id = "@ViewBag.ownerPanelId";
+    </script>
+
+
+    <script src="~/lib/jquery/dist/jquery.min.js"></script>
+    <script src="~/js/handlebars.min.js"></script>
+    <script src="~/lib/semantic-ui/dist/semantic.min.js"></script>
+    <script src="~/lib/noty/js/noty/packaged/jquery.noty.packaged.min.js"></script>
+    <script type="text/javascript" src="~/js/node-editor/litegraph.js"></script>
+    <script type="text/javascript" src="~/js/node-editor/litegraph-editor.js"></script>
+    <script type="text/javascript" src="@Html.Raw("~/js/node-editor/node-editor-theme"+theme+".js")"></script>
+    <script type="text/javascript" src="~/js/node-editor/node-editor-list.js"></script>
+    <script type="text/javascript" src="~/js/node-editor/node-editor-signalr.js"></script>
+    <script asp-src-include="~/lib/signalr/jquery.signalr.js"></script>
+    <script src="~/signalr/hubs" type="text/javascript"></script>
+
+
+</body>
+</html>

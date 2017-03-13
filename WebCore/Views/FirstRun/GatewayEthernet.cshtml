@@ -1,0 +1,88 @@
+﻿@model MyNodes.WebController.ViewModels.Config.EthernetGatewayViewModel
+
+@{
+    Layout = "_EmptyLayout";
+    ViewBag.Title = "First Run";
+}
+
+<br />
+<div class="ui container">
+
+    <h2>@ViewBag.Title</h2>
+
+
+    <div class="ui ordered steps">
+        <div class="completed step">
+            <div class="content">
+                <div class="title">Database</div>
+                <div class="description">Configure database</div>
+            </div>
+        </div>
+        <div class="active step">
+            <div class="content">
+                <div class="title">Gateway</div>
+                <div class="description">Connect to gateway</div>
+            </div>
+        </div>
+        <div class="step">
+            <div class="content">
+                <div class="title">User</div>
+                <div class="description">Create admin profile</div>
+            </div>
+        </div>
+    </div>
+
+    <div class="ui divider"></div>
+
+
+    <div class="ui two column stackable centered grid">
+
+        <div class="column">
+            <div class="ui raised segments">
+                <div class="ui secondary attached segment">
+                    <h4>Gateway</h4>
+                </div>
+
+                <div class="ui basic segment">
+                    <h2 class="ui header">Ethernet gateway</h2>
+                </div>
+
+                <form asp-action="GatewayEthernet" asp-anti-forgery="true" class="ui form">
+                    <div class="ui attached segment">
+
+
+                        <h5>Enter ethernet gateway address and port</h5>
+                        <div class="fields">
+                            <div class="twelve wide field">
+                                <label asp-for="Ip"></label>
+                                <input asp-for="Ip">
+                            </div>
+                            <div class="four wide field">
+                                <label asp-for="Port"></label>
+                                <input asp-for="Port">
+                            </div>
+                            <div class="validation" asp-validation-summary="ValidationSummary.All"></div>
+
+                        </div>
+                    </div>
+
+                    <div class="ui center aligned attached segment">
+                        <div class="ui buttons">
+                            <a asp-action="Gateway" asp-route-id="" class="ui button">Cancel</a>
+                            <input type="submit" value="Select" class="ui button primary" />
+                        </div>
+                    </div>
+                </form>
+
+
+
+            </div>
+        </div>
+
+    </div>
+</div>
+
+
+<br />
+<br />
+

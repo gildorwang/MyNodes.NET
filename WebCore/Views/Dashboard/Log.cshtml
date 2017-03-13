@@ -1,0 +1,103 @@
+﻿@using MyNodes.Gateways.MySensors
+@model List<MyNodes.Gateways.MySensors.SensorData>
+
+@{
+    ViewBag.Title = ViewBag.description + " History";
+}
+
+
+<div class="ui container">
+
+    <a asp-action="Chart" asp-route-id="@ViewBag.nodeId" asp-route-id2="@ViewBag.sensorId" class="ui button right floated">Show Chart</a>
+
+    <h2>@ViewBag.Title</h2>
+
+    <p>
+        < <a asp-controller="Dashboard" asp-action="Index">Dashboard</a>
+    </p>
+    <div class="ui divider"></div>
+
+
+
+
+
+    <div class="ui raised segments">
+        <div class="ui secondary clearing segment">
+            <b>@ViewBag.Title</b>
+            <button type="button" class="ui right floated small button" id="clear-button">Clear</button>
+        </div>
+        <div class="ui attached segment">
+            
+            @if (!Model.Any())
+            {
+                @:There are no history. Log shows realtime data only. Check node <a href="/Node/Settings/@ViewBag.uiNodeId">settings</a>
+                <br/>
+            }
+
+            <table class="ui striped table">
+                <thead>
+                <tr>
+                    <th scope="col">
+                        Date
+                    </th>
+                    <th scope="col">
+                        State
+                    </th>
+                </tr>
+                </thead>
+                <tbody id="history-table">
+                @foreach (SensorData item in Model)
+                {
+                    <tr>
+                        <td>@item.dateTime</td>
+                        <td>@item.state</td>
+                    </tr>
+                }
+                </tbody>
+
+                @*todo table pagination*@
+                @*<tfoot>
+                    <tr>
+
+                        <th colspan="3">
+                            <div class="ui pagination menu">
+                                <a class="icon item">
+                                    <i class="left chevron icon"></i>
+                                </a>
+                                <a class="item">1</a>
+                                <a class="item">2</a>
+                                <a class="item">3</a>
+                                <a class="item">4</a>
+                                <a class="icon item">
+                                    <i class="right chevron icon"></i>
+                                </a>
+                            </div>
+                        </th>
+
+
+                    </tr>
+                </tfoot>*@
+            </table>
+        </div>
+        </div>
+
+
+
+
+
+  
+
+
+</div>
+
+<br />
+
+
+@section scripts
+{
+    <script type="text/javascript">
+        var sensorId = '@ViewBag.sensorId';
+        var nodeId = '@ViewBag.nodeId';
+    </script>
+    <script src="~/js/history-log-page.js"></script>
+}
