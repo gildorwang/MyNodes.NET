@@ -7,5 +7,8 @@ namespace MyNodes.Repositories.EF.SQLite
     {
         public DbSet<Message> Messages { get; set; }
 
+        public MySensorsMessagesDbContext(DbContextOptions<MySensorsMessagesDbContext> options): base(options)
+        {
+        }
     }
 }
