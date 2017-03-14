@@ -45,7 +45,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Gateways.MySensors", "Libs\
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Devices.Ping", "Devices\Devices.Ping\Devices.Ping.vcxproj", "{FB585800-9B3F-4CF1-8191-ACF5D5635E6C}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WebCore", "WebCore\WebCore.csproj", "{8ED8CBBF-F466-4A8F-80CB-356C478A7EBD}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WebController", "WebController\WebController.csproj", "{8ED8CBBF-F466-4A8F-80CB-356C478A7EBD}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

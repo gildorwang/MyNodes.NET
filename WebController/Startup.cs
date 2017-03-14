@@ -6,43 +6,51 @@ using System.Linq;
 using System.Net;
 using System.Security.Claims;
 using System.Threading.Tasks;
-using Microsoft.AspNet.Builder;
-using Microsoft.AspNet.Hosting;
-using Microsoft.AspNet.Http;
-using Microsoft.AspNet.Routing;
-using Microsoft.AspNet.SignalR.Infrastructure;
-using Microsoft.Data.Entity;
-using Microsoft.Data.Entity.Query.ExpressionTranslators.Internal;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
-using Microsoft.Data.Entity.Infrastructure;
 using Microsoft.Extensions.PlatformAbstractions;
 using MyNodes.Repositories.EF.SQLite;
 using MyNodes.Users;
 using MyNodes.WebController.Code;
+using Microsoft.AspNetCore.Hosting;
+using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.SignalR.Infrastructure;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.AspNetCore.Http;
 
 namespace MyNodes.WebController
 {
     public class Startup
     {
-        private const string SETTINGS_FILE_NAME = "appsettings.json";
+        public static string SettingsFilePath;
+
         private string dbPath = "Databases";
         private string applicationPath;
 
         public IConfigurationRoot Configuration { get; set; }
 
-        public Startup(IHostingEnvironment env, IApplicationEnvironment appEnv)
+        public Startup(IHostingEnvironment env)
         {
-            applicationPath = appEnv.ApplicationBasePath;
+            applicationPath = env.ContentRootPath;
 
             var builder = new ConfigurationBuilder()
-                .AddJsonFile(SETTINGS_FILE_NAME)
+                .SetBasePath(env.ContentRootPath)
+                .AddJsonFile(Constants.SETTINGS_FILE_NAME)
                 .AddJsonFile($"appsettings.{env.EnvironmentName}.json", optional: true);
+
+            SettingsFilePath = Path.Combine(applicationPath, $"appsettings.{env.EnvironmentName}.json");
+            if (!File.Exists(SettingsFilePath))
+            {
+                SettingsFilePath = Path.Combine(applicationPath, Constants.SETTINGS_FILE_NAME);
+            }
 
             if (env.IsDevelopment())
             {
-                builder.AddUserSecrets();
+                //builder.AddUserSecrets();
             }
 
             builder.AddEnvironmentVariables();
@@ -52,7 +60,7 @@ namespace MyNodes.WebController
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddEntityFramework()
-                .AddSqlite()
+                .AddEntityFrameworkSqlite()
                 .AddDbContext<NodesDbContext>(options =>
                     options.UseSqlite("Data Source=" + Path.Combine(applicationPath, dbPath, "Nodes.sqlite")))
                 .AddDbContext<NodesDataDbContext>(options =>
@@ -64,7 +72,11 @@ namespace MyNodes.WebController
                 .AddDbContext<UsersDbContext>(options =>
                     options.UseSqlite("Data Source=" + Path.Combine(applicationPath, dbPath, "Users.sqlite")));
 
-            services.AddMvc();
+            services.AddMvc()
+                .AddJsonOptions((options) =>
+                {
+                    options.SerializerSettings.ContractResolver = new Newtonsoft.Json.Serialization.DefaultContractResolver();
+                });
 
             services.AddSignalR();
 
@@ -142,12 +154,12 @@ namespace MyNodes.WebController
                     app.UseExceptionHandler("/Home/Error");
                 }
 
-                app.UseRuntimeInfoPage("/info");
+                //app.UseRuntimeInfoPage("/info");
 
                 app.UseWebSockets();
                 app.UseSignalR();
 
-                app.UseIISPlatformHandler(options => options.AuthenticationDescriptions.Clear());
+                //app.UseIISPlatformHandler(options => options.AuthenticationDescriptions.Clear());
 
                 app.UseStaticFiles();
 
@@ -166,13 +178,13 @@ namespace MyNodes.WebController
                     await next.Invoke();
                 });
 
-                app.UseCookieAuthentication(options =>
+                app.UseCookieAuthentication(new CookieAuthenticationOptions
                 {
-                    options.AuthenticationScheme = "Cookies";
-                    options.LoginPath = new Microsoft.AspNet.Http.PathString("/User/Login");
-                    options.AccessDeniedPath = "/User/AccessDenied";
-                    options.AutomaticAuthenticate = true;
-                    options.AutomaticChallenge = true;
+                    AuthenticationScheme = "Cookies",
+                    LoginPath = new PathString("/User/Login"),
+                    AccessDeniedPath = "/User/AccessDenied",
+                    AutomaticAuthenticate = true,
+                    AutomaticChallenge = true,
                 });
 
 
@@ -194,9 +206,9 @@ namespace MyNodes.WebController
         }
 
 
-        public static void Main(string[] args)
-        {
-            WebApplication.Run<Startup>(args);
-        }
+        //public static void Main(string[] args)
+        //{
+        //    WebApplication.Run<Startup>(args);
+        //}
     }
 }
