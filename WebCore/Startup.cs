@@ -72,7 +72,11 @@ namespace MyNodes.WebController
                 .AddDbContext<UsersDbContext>(options =>
                     options.UseSqlite("Data Source=" + Path.Combine(applicationPath, dbPath, "Users.sqlite")));
 
-            services.AddMvc();
+            services.AddMvc()
+                .AddJsonOptions((options) =>
+                {
+                    options.SerializerSettings.ContractResolver = new Newtonsoft.Json.Serialization.DefaultContractResolver();
+                });
 
             services.AddSignalR();
 
