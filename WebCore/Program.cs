@@ -2,7 +2,7 @@
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 
-namespace WebCore
+namespace MyNodes.WebController
 {
     public class Program
     {

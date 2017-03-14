@@ -13,23 +13,22 @@ using MyNodes.WebController.ViewModels.Config;
 using Newtonsoft.Json.Linq;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Hosting;
 
 namespace MyNodes.WebController.Controllers
 {
     [Authorize(UserClaims.ConfigObserver)]
     public class ConfigController : Controller
     {
-
-        private const string SETTINGS_FILE_NAME = "appsettings.json";
         private string settings_file;
         private string project_file;
         private IConfigurationRoot configuration;
 
-        public ConfigController(IConfigurationRoot configuration)
+        public ConfigController(IConfigurationRoot configuration, IHostingEnvironment env)
         {
             this.configuration = configuration;
-            string applicationPath = configuration.;
-            settings_file = Path.Combine(applicationPath, SETTINGS_FILE_NAME);
+            string applicationPath = env.ContentRootPath;
+            settings_file = Startup.SettingsFilePath;
             project_file = Path.Combine(applicationPath, "project.json");
         }
 
@@ -48,8 +47,6 @@ namespace MyNodes.WebController.Controllers
             return View();
         }
 
-
-
         [HttpGet]
         public IActionResult SerialGateway()
         {
@@ -57,11 +54,10 @@ namespace MyNodes.WebController.Controllers
 
             return View(new SerialGatewayViewModel
             {
-                PortName = SystemController.gatewayConfig.SerialGatewayConfig.SerialPortName,
-                Boudrate = SystemController.gatewayConfig.SerialGatewayConfig.Boudrate
+                PortName = SystemController.gatewayConfig.SerialGateway.SerialPortName,
+                Boudrate = SystemController.gatewayConfig.SerialGateway.Boudrate
             });
         }
-
 
         [Authorize(UserClaims.ConfigEditor)]
 
@@ -78,8 +74,8 @@ namespace MyNodes.WebController.Controllers
             configuration.Reload();
 
             SystemController.DisconnectGateway();
-            SystemController.gatewayConfig.SerialGatewayConfig.SerialPortName = model.PortName;
-            SystemController.gatewayConfig.SerialGatewayConfig.Boudrate = model.Boudrate;
+            SystemController.gatewayConfig.SerialGateway.SerialPortName = model.PortName;
+            SystemController.gatewayConfig.SerialGateway.Boudrate = model.Boudrate;
 
             return RedirectToAction("Index");
         }
@@ -90,8 +86,8 @@ namespace MyNodes.WebController.Controllers
         {
             EthernetGatewayViewModel model = new EthernetGatewayViewModel
             {
-                Ip = SystemController.gatewayConfig.EthernetGatewayConfig.GatewayIP,
-                Port = SystemController.gatewayConfig.EthernetGatewayConfig.GatewayPort
+                Ip = SystemController.gatewayConfig.EthernetGateway.GatewayIP,
+                Port = SystemController.gatewayConfig.EthernetGateway.GatewayPort
             };
 
             return View(model);
@@ -110,8 +106,8 @@ namespace MyNodes.WebController.Controllers
             configuration.Reload();
 
             SystemController.DisconnectGateway();
-            SystemController.gatewayConfig.EthernetGatewayConfig.GatewayIP = model.Ip;
-            SystemController.gatewayConfig.EthernetGatewayConfig.GatewayPort = model.Port;
+            SystemController.gatewayConfig.EthernetGateway.GatewayIP = model.Ip;
+            SystemController.gatewayConfig.EthernetGateway.GatewayPort = model.Port;
 
             return RedirectToAction("Index");
         }
@@ -129,8 +125,8 @@ namespace MyNodes.WebController.Controllers
             WriteConfig(json);
             configuration.Reload();
 
-            SystemController.gatewayConfig.SerialGatewayConfig.Enable = true;
-            SystemController.gatewayConfig.EthernetGatewayConfig.Enable = false;
+            SystemController.gatewayConfig.SerialGateway.Enable = true;
+            SystemController.gatewayConfig.EthernetGateway.Enable = false;
 
             await Task.Run((() =>
             {
@@ -154,8 +150,8 @@ namespace MyNodes.WebController.Controllers
             WriteConfig(json);
             configuration.Reload();
 
-            SystemController.gatewayConfig.SerialGatewayConfig.Enable = false;
-            SystemController.gatewayConfig.EthernetGatewayConfig.Enable = true;
+            SystemController.gatewayConfig.SerialGateway.Enable = false;
+            SystemController.gatewayConfig.EthernetGateway.Enable = true;
 
             await Task.Run((() =>
             {
@@ -176,8 +172,8 @@ namespace MyNodes.WebController.Controllers
             WriteConfig(json);
             configuration.Reload();
 
-            SystemController.gatewayConfig.SerialGatewayConfig.Enable = false;
-            SystemController.gatewayConfig.EthernetGatewayConfig.Enable = false;
+            SystemController.gatewayConfig.SerialGateway.Enable = false;
+            SystemController.gatewayConfig.EthernetGateway.Enable = false;
 
             SystemController.DisconnectGateway();
 
@@ -272,6 +268,8 @@ namespace MyNodes.WebController.Controllers
         {
             if (model != null)
             {
+                return BadRequest();
+
                 SystemController.webServerConfig = model;
 
                 dynamic json = ReadConfig();

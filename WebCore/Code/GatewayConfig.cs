@@ -12,7 +12,7 @@ namespace MyNodes.WebController.Code
         public bool LogState { get; set; }
         public bool LogMessages { get; set; }
 
-        public SerialGatewayConfig SerialGatewayConfig { get; set; }
-        public EthernetGatewayConfig EthernetGatewayConfig { get; set; }
+        public SerialGatewayConfig SerialGateway { get; set; }
+        public EthernetGatewayConfig EthernetGateway { get; set; }
     }
 }

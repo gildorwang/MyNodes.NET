@@ -19,12 +19,15 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.SignalR.Infrastructure;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.AspNetCore.Http;
 
 namespace MyNodes.WebController
 {
     public class Startup
     {
-        private const string SETTINGS_FILE_NAME = "appsettings.json";
+        public static string SettingsFilePath;
+
         private string dbPath = "Databases";
         private string applicationPath;
 
@@ -36,12 +39,18 @@ namespace MyNodes.WebController
 
             var builder = new ConfigurationBuilder()
                 .SetBasePath(env.ContentRootPath)
-                .AddJsonFile(SETTINGS_FILE_NAME)
+                .AddJsonFile(Constants.SETTINGS_FILE_NAME)
                 .AddJsonFile($"appsettings.{env.EnvironmentName}.json", optional: true);
+
+            SettingsFilePath = Path.Combine(applicationPath, $"appsettings.{env.EnvironmentName}.json");
+            if (!File.Exists(SettingsFilePath))
+            {
+                SettingsFilePath = Path.Combine(applicationPath, Constants.SETTINGS_FILE_NAME);
+            }
 
             if (env.IsDevelopment())
             {
-                builder.AddUserSecrets();
+                //builder.AddUserSecrets();
             }
 
             builder.AddEnvironmentVariables();
@@ -51,7 +60,7 @@ namespace MyNodes.WebController
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddEntityFramework()
-                .AddSqlite()
+                .AddEntityFrameworkSqlite()
                 .AddDbContext<NodesDbContext>(options =>
                     options.UseSqlite("Data Source=" + Path.Combine(applicationPath, dbPath, "Nodes.sqlite")))
                 .AddDbContext<NodesDataDbContext>(options =>
@@ -141,12 +150,12 @@ namespace MyNodes.WebController
                     app.UseExceptionHandler("/Home/Error");
                 }
 
-                app.UseRuntimeInfoPage("/info");
+                //app.UseRuntimeInfoPage("/info");
 
                 app.UseWebSockets();
                 app.UseSignalR();
 
-                app.UseIISPlatformHandler(options => options.AuthenticationDescriptions.Clear());
+                //app.UseIISPlatformHandler(options => options.AuthenticationDescriptions.Clear());
 
                 app.UseStaticFiles();
 
@@ -165,13 +174,13 @@ namespace MyNodes.WebController
                     await next.Invoke();
                 });
 
-                app.UseCookieAuthentication(options =>
+                app.UseCookieAuthentication(new CookieAuthenticationOptions
                 {
-                    options.AuthenticationScheme = "Cookies";
-                    options.LoginPath = new Microsoft.AspNet.Http.PathString("/User/Login");
-                    options.AccessDeniedPath = "/User/AccessDenied";
-                    options.AutomaticAuthenticate = true;
-                    options.AutomaticChallenge = true;
+                    AuthenticationScheme = "Cookies",
+                    LoginPath = new PathString("/User/Login"),
+                    AccessDeniedPath = "/User/AccessDenied",
+                    AutomaticAuthenticate = true,
+                    AutomaticChallenge = true,
                 });
 
 
@@ -193,9 +202,9 @@ namespace MyNodes.WebController
         }
 
 
-        public static void Main(string[] args)
-        {
-            WebApplication.Run<Startup>(args);
-        }
+        //public static void Main(string[] args)
+        //{
+        //    WebApplication.Run<Startup>(args);
+        //}
     }
 }

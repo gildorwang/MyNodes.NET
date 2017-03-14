@@ -18,20 +18,19 @@ using MyNodes.WebController.ViewModels.FirstRun;
 using MyNodes.WebController.ViewModels.User;
 using Newtonsoft.Json.Linq;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Hosting;
 
 namespace MyNodes.WebController.Controllers
 {
     public class FirstRunController : Controller
     {
-        private const string SETTINGS_FILE_NAME = "appsettings.json";
         private string settings_file;
         private IConfigurationRoot configuration;
 
-        public FirstRunController(IConfigurationRoot configuration, IApplicationEnvironment appEnv)
+        public FirstRunController(IConfigurationRoot configuration)
         {
             this.configuration = configuration;
-            string applicationPath = appEnv.ApplicationBasePath;
-            settings_file = Path.Combine(applicationPath, SETTINGS_FILE_NAME);
+            settings_file = Startup.SettingsFilePath;
         }
 
         private dynamic ReadConfig()
