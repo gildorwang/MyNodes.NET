@@ -21,7 +21,7 @@ namespace MyNodes.WebController.Controllers
     public class ConfigController : Controller
     {
         private string settings_file;
-        private string project_file;
+        private string hosting_file;
         private IConfigurationRoot configuration;
 
         public ConfigController(IConfigurationRoot configuration, IHostingEnvironment env)
@@ -29,7 +29,7 @@ namespace MyNodes.WebController.Controllers
             this.configuration = configuration;
             string applicationPath = env.ContentRootPath;
             settings_file = Startup.SettingsFilePath;
-            project_file = Path.Combine(applicationPath, "project.json");
+            hosting_file = Path.Combine(applicationPath, Constants.HOSTING_CONFIG_FILE_NAME);
         }
 
         private dynamic ReadConfig()
@@ -268,17 +268,15 @@ namespace MyNodes.WebController.Controllers
         {
             if (model != null)
             {
-                return BadRequest();
-
                 SystemController.webServerConfig = model;
 
                 dynamic json = ReadConfig();
                 json.WebServer.Address = model.Address;
                 WriteConfig(json);
 
-                json= JObject.Parse(System.IO.File.ReadAllText(project_file));
-                json.commands.web = $"Microsoft.AspNet.Server.Kestrel --server.urls {model.Address}";
-                System.IO.File.WriteAllText(project_file, json.ToString());
+                json= JObject.Parse(System.IO.File.ReadAllText(hosting_file));
+                json.urls = model.Address;
+                System.IO.File.WriteAllText(hosting_file, json.ToString());
 
                 configuration.Reload();
             }

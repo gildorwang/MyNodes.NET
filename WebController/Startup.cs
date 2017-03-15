@@ -1,17 +1,8 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Diagnostics;
 using System.IO;
-using System.Linq;
-using System.Net;
-using System.Security.Claims;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.PlatformAbstractions;
 using MyNodes.Repositories.EF.SQLite;
 using MyNodes.Users;
 using MyNodes.WebController.Code;
@@ -115,7 +106,6 @@ namespace MyNodes.WebController
             customCulture.NumberFormat.NumberDecimalSeparator = ".";
             System.Threading.Thread.CurrentThread.CurrentCulture = customCulture;
 
-
             //debug settings
             bool webServerDebug = false;
             bool webServerEnable = false;
@@ -137,9 +127,6 @@ namespace MyNodes.WebController
 
             loggerFactory.AddDebug();
 
-
-
-
             //web server settings
             if (webServerEnable)
             {
@@ -154,12 +141,8 @@ namespace MyNodes.WebController
                     app.UseExceptionHandler("/Home/Error");
                 }
 
-                //app.UseRuntimeInfoPage("/info");
-
                 app.UseWebSockets();
                 app.UseSignalR();
-
-                //app.UseIISPlatformHandler(options => options.AuthenticationDescriptions.Clear());
 
                 app.UseStaticFiles();
 
@@ -204,11 +187,5 @@ namespace MyNodes.WebController
 
             SystemController.Start(Configuration, serviceProvider);
         }
-
-
-        //public static void Main(string[] args)
-        //{
-        //    WebApplication.Run<Startup>(args);
-        //}
     }
 }
