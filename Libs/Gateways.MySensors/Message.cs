@@ -7,10 +7,9 @@ using System;
 
 namespace MyNodes.Gateways.MySensors
 {
-    public class Message : ICloneable
+    public class Message : ICloneable, IEquatable<Message>
     {
         public int Id { get; set; }
-
 
         public int nodeId { get; set; }
         public int sensorId { get; set; }
@@ -21,13 +20,10 @@ namespace MyNodes.Gateways.MySensors
         public bool incoming { get; set; } //or outgoing
         public DateTime dateTime { get; set; }
 
-
-
         public Message()
         {
             dateTime = DateTime.Now;
         }
-
 
         //parse message from string
         public Message(string message)
@@ -45,7 +41,7 @@ namespace MyNodes.Gateways.MySensors
 
         public object Clone()
         {
-            return this.MemberwiseClone();
+            return MemberwiseClone();
         }
 
         public string GetDecodedSubType()
@@ -60,8 +56,6 @@ namespace MyNodes.Gateways.MySensors
             return subTypeString;
         }
 
-
-
         private void ParseFromString(string message)
         {
             dateTime = DateTime.Now;
@@ -75,9 +69,42 @@ namespace MyNodes.Gateways.MySensors
             payload = arguments[5];
         }
 
-        public string ParseToMySensorsMessage()
+        public string ToMySensorsMessage()
         {
             return $"{nodeId};{sensorId};{(int) messageType};{(ack ? "1" : "0")};{subType};{payload}\n";
+        }
+
+        public bool Equals(Message other)
+        {
+            return nodeId == other.nodeId &&
+                sensorId == other.sensorId &&
+                messageType == other.messageType &&
+                subType == other.subType &&
+                payload == other.payload;
+        }
+
+        public override bool Equals(object obj)
+        {
+            var other = obj as Message;
+            if (other == null)
+            {
+                return base.Equals(obj);
+            }
+            return Equals(other);
+        }
+
+        public override int GetHashCode()
+        {
+            unchecked
+            {
+                int hash = 17;
+                hash = hash * 23 + nodeId.GetHashCode();
+                hash = hash * 23 + sensorId.GetHashCode();
+                hash = hash * 23 + messageType.GetHashCode();
+                hash = hash * 23 + subType.GetHashCode();
+                hash = hash * 23 + payload.GetHashCode();
+                return hash;
+            }
         }
     }
 }
