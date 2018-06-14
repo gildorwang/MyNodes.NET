@@ -4,6 +4,7 @@
 */
 
 using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -63,6 +64,12 @@ namespace MyNodes.Gateways.MySensors
         private IMySensorsRepository db;
         private IMySensorsMessagesRepository hisotryDb;
 
+        private const int MaxResendCount = 5;
+        private const int ResendIntervalBaseMs = 1000;
+
+        private readonly ConcurrentDictionary<Message, int> messagesNotAcked = new ConcurrentDictionary<Message, int>();
+        private readonly Task resendMessageTask;
+
         public Gateway(IGatewayConnectionPort connectionPort, IMySensorsRepository db = null, IMySensorsMessagesRepository hisotryDb = null)
         {
             this.db = db;
@@ -79,10 +86,42 @@ namespace MyNodes.Gateways.MySensors
             this.connectionPort.OnLogError += LogError;
             this.connectionPort.OnLogInfo += LogInfo;
             this.connectionPort.OnLogMessage += LogMessage;
+
+            resendMessageTask = CreateResendMessageTask();
         }
 
+        private Task CreateResendMessageTask()
+        {
+            return Task.Run(async () =>
+            {
+                while (true)
+                {
+                    if (gatewayState == GatewayState.Connected)
+                    {
+                        foreach (var messageNotAcked in messagesNotAcked)
+                        {
+                            var message = messageNotAcked.Key;
+                            var remainingResendCount = messageNotAcked.Value;
+                            if (remainingResendCount == 0)
+                            {
+                                messagesNotAcked.TryRemove(message, out var t);
+                                continue;
+                            }
+                            if (DateTime.Now - message.dateTime > TimeSpan.FromMilliseconds(ResendIntervalBaseMs * Math.Pow(2, MaxResendCount - remainingResendCount)))
+                            {
+                                // Resend the message
+                                Console.WriteLine("Resending message: {0}", message);
+                                SendMessage(message);
+                                message.dateTime = DateTime.Now;
+                                messagesNotAcked.TryUpdate(message, remainingResendCount - 1, remainingResendCount);
+                            }
+                        }
+                    }
+                    await Task.Delay(300);
+                }
+            });
+        }
 
-     
         internal void LogInfo(string message)
         {
             OnLogInfo?.Invoke(message);
@@ -98,7 +137,6 @@ namespace MyNodes.Gateways.MySensors
             OnLogMessage?.Invoke(message);
         }
 
-
         public GatewayState GetGatewayState()
         {
             return gatewayState;
@@ -106,7 +144,6 @@ namespace MyNodes.Gateways.MySensors
 
         private void SetGatewayState(GatewayState newState)
         {
-
             switch (newState)
             {
                 case GatewayState.Disconnected:
@@ -187,7 +224,6 @@ namespace MyNodes.Gateways.MySensors
             return gatewayState == GatewayState.Connected;
         }
 
-
         private async void TryToCommunicateWithGateway()
         {
             SetGatewayState(GatewayState.ConnectingToGateway);
@@ -219,10 +255,7 @@ namespace MyNodes.Gateways.MySensors
                 }
                 LogError("Gateway is not responding.");
             }
-
-
         }
-
 
         private void SendMessage(Message message)
         {
@@ -233,15 +266,12 @@ namespace MyNodes.Gateways.MySensors
                 return;
             }
 
-            message.incoming = false;
-
             OnMessageSend?.Invoke(message);
 
             UpdateSensorFromMessage(message);
 
-            string mes = message.ParseToMySensorsMessage();
+            string mes = message.ToMySensorsMessage();
             connectionPort.SendMessage(mes);
-
 
             AddDecodedMessageToLog(message);
         }
@@ -257,7 +287,6 @@ namespace MyNodes.Gateways.MySensors
 
             OnLogDecodedMessage?.Invoke(message);
         }
-
 
         public void RecieveMessage(string data)
         {
@@ -279,10 +308,11 @@ namespace MyNodes.Gateways.MySensors
                 }
 
                 if (mes != null)
+                {
                     RecieveMessage(mes);
+                }
             }
         }
-
 
         private string messageBuffer = "";
 
@@ -296,7 +326,7 @@ namespace MyNodes.Gateways.MySensors
                 {
                     messageBuffer += data[i];
                 }
-                else
+                else if (messageBuffer.Length > 0)
                 {
                     messages.Add(messageBuffer);
                     messageBuffer = "";
@@ -309,38 +339,52 @@ namespace MyNodes.Gateways.MySensors
         public void RecieveMessage(Message message)
         {
             message.incoming = true;
-
             AddDecodedMessageToLog(message);
-
             OnMessageRecieved?.Invoke(message);
-
 
             //Gateway ready
             if (message.messageType == MessageType.C_INTERNAL && message.subType == (int)InternalDataType.I_GATEWAY_READY)
+            {
                 return;
-
+            }
 
             //Gateway log message
             if (message.messageType == MessageType.C_INTERNAL && message.subType == (int)InternalDataType.I_LOG_MESSAGE)
+            {
                 return;
+            }
+
+            // Discover response
+            if (message.messageType == MessageType.C_INTERNAL && message.subType == (int)InternalDataType.I_DISCOVER_RESPONSE)
+            {
+                return;
+            }
 
             //New ID request
             if (message.nodeId == 255)
             {
                 if (message.messageType == MessageType.C_INTERNAL && message.subType == (int)InternalDataType.I_ID_REQUEST)
+                {
                     if (enableAutoAssignId)
+                    {
                         SendNewIdResponse();
+                    }
+                }
 
                 return;
             }
 
             //Config request
             if (message.messageType == MessageType.C_INTERNAL && message.subType == (int)InternalDataType.I_CONFIG)
+            {
                 SendConfigResponse(message.nodeId);
+            }
 
             //Sensor request
             if (message.messageType == MessageType.C_REQ)
+            {
                 ProceedRequestMessage(message);
+            }
 
             //Gateway vesrion (alive) response
             if (message.nodeId == 0
@@ -348,19 +392,30 @@ namespace MyNodes.Gateways.MySensors
                 && message.subType == (int)InternalDataType.I_VERSION)
             {
                 if (gatewayState != GatewayState.Connected)
+                {
                     SetGatewayState(GatewayState.Connected);
+                }
             }
 
             //request to node
             if (message.nodeId == 0)
+            {
                 return;
+            }
+
+            if (message.ack)
+            {
+                ProcessAckMessage(message);
+            }
 
             UpdateNodeFromMessage(message);
             UpdateSensorFromMessage(message);
         }
 
-
-
+        private void ProcessAckMessage(Message message)
+        {
+            messagesNotAcked.TryRemove(message, out int remainingTryCount);
+        }
 
         private void ProceedRequestMessage(Message mes)
         {
@@ -506,21 +561,16 @@ namespace MyNodes.Gateways.MySensors
             }
         }
 
-
         public Node GetNode(int nodeId)
         {
             Node node = nodes.FirstOrDefault(x => x.Id == nodeId);
             return node;
         }
 
-
         public List<Node> GetNodes()
         {
             return nodes;
         }
-
-
-
 
         public void SendSensorState(int nodeId, int sensorId, string state)
         {
@@ -538,7 +588,6 @@ namespace MyNodes.Gateways.MySensors
             }
             sensor.state = state;
 
-
             SendSensorState(sensor);
         }
 
@@ -546,7 +595,9 @@ namespace MyNodes.Gateways.MySensors
         {
             Message message = new Message
             {
-                ack = false,
+                incoming = false,
+                // Request ack by default
+                ack = true,
                 messageType = MessageType.C_SET,
                 nodeId = sensor.nodeId,
                 payload = sensor.state,
@@ -554,6 +605,7 @@ namespace MyNodes.Gateways.MySensors
                 subType = (int)sensor.dataType
             };
             SendMessage(message);
+            messagesNotAcked.AddOrUpdate(message, MaxResendCount, (existingMessage, remainingResendCount) => MaxResendCount);
         }
 
         public int GetFreeNodeId()
@@ -577,6 +629,7 @@ namespace MyNodes.Gateways.MySensors
 
             Message mess = new Message
             {
+                incoming = false,
                 nodeId = 255,
                 sensorId = 255,
                 messageType = MessageType.C_INTERNAL,
@@ -591,6 +644,7 @@ namespace MyNodes.Gateways.MySensors
         {
             Message mess = new Message
             {
+                incoming = false,
                 nodeId = nodeId,
                 sensorId = 255,
                 messageType = MessageType.C_INTERNAL,
@@ -606,6 +660,7 @@ namespace MyNodes.Gateways.MySensors
         {
             Message mess = new Message
             {
+                incoming = false,
                 nodeId = 0,
                 sensorId = 0,
                 messageType = MessageType.C_INTERNAL,
@@ -640,6 +695,7 @@ namespace MyNodes.Gateways.MySensors
         {
             Message message = new Message
             {
+                incoming = false,
                 ack = false,
                 messageType = MessageType.C_INTERNAL,
                 nodeId = nodeId,
@@ -649,8 +705,6 @@ namespace MyNodes.Gateways.MySensors
             };
             SendMessage(message);
         }
-
-
 
         public void RemoveNode(int nodeId)
         {
