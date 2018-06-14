@@ -27,7 +27,7 @@ namespace MyNodes.WebController.Code
         {
             gateway = SystemController.gateway;
 
-            gateway.OnMessageRecieved += OnMessageRecieved;
+            gateway.OnMessageReceived += OnMessageRecieved;
             gateway.OnMessageSend += OnMessageSend;
             gateway.OnConnected += OnConnected;
             gateway.OnDisconnected += OnDisconnected;

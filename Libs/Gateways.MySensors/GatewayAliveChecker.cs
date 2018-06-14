@@ -26,7 +26,7 @@ namespace MyNodes.Gateways.MySensors
             gateway.OnUnexpectedlyDisconnected += Stop;
             gateway.OnDisconnected += Stop;
             gateway.OnConnected += Start;
-            gateway.OnMessageRecieved += OnMessageRecieved;
+            gateway.OnMessageReceived += OnMessageReceived;
             checkGatewayTimer.Elapsed += CheckGatewayAlive;
         }
 
@@ -68,9 +68,9 @@ namespace MyNodes.Gateways.MySensors
         }
 
 
-        private void OnMessageRecieved(Message message)
+        private void OnMessageReceived(Message message)
         {
-            //Gateway vesrion (alive) respond
+            //Gateway version (alive) respond
             if (message.nodeId == 0
                 && message.messageType == MessageType.C_INTERNAL
                 && message.subType == (int)InternalDataType.I_VERSION)

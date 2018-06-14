@@ -36,7 +36,7 @@ namespace MyNodes.Gateways.MySensors
 
         public Func<bool> IsMetricUnit { get; set; } = () => true;
 
-        public event MessageEventHandler OnMessageRecieved;
+        public event MessageEventHandler OnMessageReceived;
         public event MessageEventHandler OnMessageSend;
         public event NodeEventHandler OnRemoveNode;
         public event NodeEventHandler OnNewNode;
@@ -62,7 +62,7 @@ namespace MyNodes.Gateways.MySensors
         private GatewayState gatewayState = GatewayState.Disconnected;
 
         private IMySensorsRepository db;
-        private IMySensorsMessagesRepository hisotryDb;
+        private IMySensorsMessagesRepository historyDb;
 
         private const int MaxResendCount = 5;
         private const int ResendIntervalBaseMs = 1000;
@@ -70,17 +70,17 @@ namespace MyNodes.Gateways.MySensors
         private readonly ConcurrentDictionary<Message, int> messagesNotAcked = new ConcurrentDictionary<Message, int>();
         private readonly Task resendMessageTask;
 
-        public Gateway(IGatewayConnectionPort connectionPort, IMySensorsRepository db = null, IMySensorsMessagesRepository hisotryDb = null)
+        public Gateway(IGatewayConnectionPort connectionPort, IMySensorsRepository db = null, IMySensorsMessagesRepository historyDb = null)
         {
             this.db = db;
-            this.hisotryDb = hisotryDb;
+            this.historyDb = historyDb;
 
             nodes = db?.GetNodes() ?? new List<Node>();
 
             gatewayAliveChecker = new GatewayAliveChecker(this);
 
             this.connectionPort = connectionPort;
-            this.connectionPort.OnDataReceived += RecieveMessage;
+            this.connectionPort.OnDataReceived += ReceiveMessage;
             this.connectionPort.OnDisconnected += OnConnectionPortDisconnected;
             this.connectionPort.OnConnected += TryToCommunicateWithGateway;
             this.connectionPort.OnLogError += LogError;
@@ -288,7 +288,7 @@ namespace MyNodes.Gateways.MySensors
             OnLogDecodedMessage?.Invoke(message);
         }
 
-        public void RecieveMessage(string data)
+        public void ReceiveMessage(string data)
         {
             //string[] messages = data.Split(new char[] { '\r', '\n' },
             //    StringSplitOptions.None);
@@ -309,7 +309,7 @@ namespace MyNodes.Gateways.MySensors
 
                 if (mes != null)
                 {
-                    RecieveMessage(mes);
+                    ReceiveMessage(mes);
                 }
             }
         }
@@ -336,11 +336,11 @@ namespace MyNodes.Gateways.MySensors
         }
 
 
-        public void RecieveMessage(Message message)
+        public void ReceiveMessage(Message message)
         {
             message.incoming = true;
             AddDecodedMessageToLog(message);
-            OnMessageRecieved?.Invoke(message);
+            OnMessageReceived?.Invoke(message);
 
             //Gateway ready
             if (message.messageType == MessageType.C_INTERNAL && message.subType == (int)InternalDataType.I_GATEWAY_READY)
@@ -386,7 +386,7 @@ namespace MyNodes.Gateways.MySensors
                 ProceedRequestMessage(message);
             }
 
-            //Gateway vesrion (alive) response
+            //Gateway version (alive) response
             if (message.nodeId == 0
                 && message.messageType == MessageType.C_INTERNAL
                 && message.subType == (int)InternalDataType.I_VERSION)
