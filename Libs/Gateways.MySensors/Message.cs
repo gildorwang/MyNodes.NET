@@ -18,6 +18,10 @@ namespace MyNodes.Gateways.MySensors
         public int subType { get; set; }
         public string payload { get; set; }
         public bool incoming { get; set; } //or outgoing
+
+        /// <summary>
+        /// Time when the message is created, received, or resent.
+        /// </summary>
         public DateTime dateTime { get; set; }
 
         public Message()

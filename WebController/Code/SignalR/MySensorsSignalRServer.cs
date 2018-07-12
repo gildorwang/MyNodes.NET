@@ -92,8 +92,6 @@ namespace MyNodes.WebController.Code
             hub.Clients.All.OnConnected();
         }
 
-
-
         private static void OnMessageRecieved(Message message)
         {
             hub.Clients.All.OnMessageRecieved(message.ToString());
@@ -102,8 +100,6 @@ namespace MyNodes.WebController.Code
         private static void OnMessageSend(Message message)
         {
             hub.Clients.All.OnMessageSend(message.ToString());
-
         }
-       
     }
 }

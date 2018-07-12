@@ -98,23 +98,31 @@ namespace MyNodes.Gateways.MySensors
                 {
                     if (gatewayState == GatewayState.Connected)
                     {
-                        foreach (var messageNotAcked in messagesNotAcked)
+                        try
                         {
-                            var message = messageNotAcked.Key;
-                            var remainingResendCount = messageNotAcked.Value;
-                            if (remainingResendCount == 0)
+                            foreach (var messageNotAcked in messagesNotAcked)
                             {
-                                messagesNotAcked.TryRemove(message, out var t);
-                                continue;
+                                var message = messageNotAcked.Key;
+                                var remainingResendCount = messageNotAcked.Value;
+                                if (remainingResendCount == 0 || GetNode(message.nodeId) == null)
+                                {
+                                    messagesNotAcked.TryRemove(message, out var t);
+                                    continue;
+                                }
+                                if (DateTime.Now - message.dateTime > TimeSpan.FromMilliseconds(ResendIntervalBaseMs * Math.Pow(2, MaxResendCount - remainingResendCount)))
+                                {
+                                    await Task.Delay(50);
+                                    // Resend the message
+                                    Console.WriteLine("Resending message: {0}", message);
+                                    SendMessage(message);
+                                    message.dateTime = DateTime.Now;
+                                    messagesNotAcked.TryUpdate(message, remainingResendCount - 1, remainingResendCount);
+                                }
                             }
-                            if (DateTime.Now - message.dateTime > TimeSpan.FromMilliseconds(ResendIntervalBaseMs * Math.Pow(2, MaxResendCount - remainingResendCount)))
-                            {
-                                // Resend the message
-                                Console.WriteLine("Resending message: {0}", message);
-                                SendMessage(message);
-                                message.dateTime = DateTime.Now;
-                                messagesNotAcked.TryUpdate(message, remainingResendCount - 1, remainingResendCount);
-                            }
+                        }
+                        catch (Exception e)
+                        {
+                            LogError($"Caught exception {e.GetType().FullName} when resending messages. Details: {e.ToString()}");
                         }
                     }
                     await Task.Delay(300);
@@ -263,6 +271,12 @@ namespace MyNodes.Gateways.MySensors
                 && gatewayState != GatewayState.ConnectingToGateway)
             {
                 LogError("Failed to send message. Gateway is not connected.");
+                return;
+            }
+
+            if (message.nodeId != 0 && GetNode(message.nodeId) == null)
+            {
+                LogError($"Cannot send message. Node[{message.nodeId}] does not exist.");
                 return;
             }
 
@@ -531,7 +545,23 @@ namespace MyNodes.Gateways.MySensors
             {
                 sensor.dataType = (SensorDataType)mes.subType;
                 sensor.state = mes.payload;
-                LogInfo($"Node[{sensor.nodeId}] Sensor[{sensor.sensorId}] datatype: [{sensor.dataType}] state: [{sensor.state}]");
+                string prefix;
+                if (mes.incoming)
+                {
+                    if (mes.ack)
+                    {
+                        prefix = "ACK";
+                    }
+                    else
+                    {
+                        prefix = "IN ";
+                    }
+                }
+                else
+                {
+                    prefix = "OUT";
+                }
+                LogInfo($"{prefix} - Node[{sensor.nodeId}] Sensor[{sensor.sensorId}] datatype: [{sensor.dataType}] state: [{sensor.state}]");
 
                 db?.UpdateSensor(sensor);
                 OnSensorUpdated?.Invoke(sensor);
@@ -555,7 +585,9 @@ namespace MyNodes.Gateways.MySensors
                 LogInfo($"Node[{sensor.nodeId}] Sensor[{sensor.sensorId}] presented type: [{sensor.type}]");
                 LogInfo($"Node[{sensor.nodeId}] Sensor[{sensor.sensorId}] datatype set to default: [{sensor.dataType}]");
                 if (!String.IsNullOrEmpty(sensor.description))
+                {
                     LogInfo($"Node[{sensor.nodeId}] Sensor[{sensor.sensorId}] description: [{sensor.description}]");
+                }
                 db?.UpdateSensor(sensor);
                 OnSensorUpdated?.Invoke(sensor);
             }
