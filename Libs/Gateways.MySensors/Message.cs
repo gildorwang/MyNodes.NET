@@ -18,6 +18,11 @@ namespace MyNodes.Gateways.MySensors
         public int subType { get; set; }
         public string payload { get; set; }
         public bool incoming { get; set; } //or outgoing
+        /// <summary>
+        /// Represents how many times this message has been tried to resend.
+        /// 0 means this is the first time sending this message.
+        /// </summary>
+        public int resendCount { get; set; }
 
         /// <summary>
         /// Time when the message is created, received, or resent.

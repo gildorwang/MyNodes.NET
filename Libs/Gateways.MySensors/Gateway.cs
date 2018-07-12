@@ -96,36 +96,37 @@ namespace MyNodes.Gateways.MySensors
             {
                 while (true)
                 {
-                    if (gatewayState == GatewayState.Connected)
+                    await Task.Delay(300);
+                    if (gatewayState != GatewayState.Connected)
                     {
-                        try
+                        continue;
+                    }
+                    try
+                    {
+                        foreach (var messageNotAcked in messagesNotAcked)
                         {
-                            foreach (var messageNotAcked in messagesNotAcked)
+                            var message = messageNotAcked.Key;
+                            var remainingResendCount = messageNotAcked.Value;
+                            if (remainingResendCount == 0 || GetNode(message.nodeId) == null)
                             {
-                                var message = messageNotAcked.Key;
-                                var remainingResendCount = messageNotAcked.Value;
-                                if (remainingResendCount == 0 || GetNode(message.nodeId) == null)
-                                {
-                                    messagesNotAcked.TryRemove(message, out var t);
-                                    continue;
-                                }
-                                if (DateTime.Now - message.dateTime > TimeSpan.FromMilliseconds(ResendIntervalBaseMs * Math.Pow(2, MaxResendCount - remainingResendCount)))
-                                {
-                                    await Task.Delay(50);
-                                    // Resend the message
-                                    Console.WriteLine("Resending message: {0}", message);
-                                    SendMessage(message);
-                                    message.dateTime = DateTime.Now;
-                                    messagesNotAcked.TryUpdate(message, remainingResendCount - 1, remainingResendCount);
-                                }
+                                messagesNotAcked.TryRemove(message, out var t);
+                                continue;
+                            }
+                            if (DateTime.Now - message.dateTime > TimeSpan.FromMilliseconds(ResendIntervalBaseMs * Math.Pow(2, MaxResendCount - remainingResendCount)))
+                            {
+                                await Task.Delay(50);
+                                // Resend the message
+                                message.resendCount++;
+                                message.dateTime = DateTime.Now;
+                                SendMessage(message);
+                                messagesNotAcked.TryUpdate(message, remainingResendCount - 1, remainingResendCount);
                             }
                         }
-                        catch (Exception e)
-                        {
-                            LogError($"Caught exception {e.GetType().FullName} when resending messages. Details: {e.ToString()}");
-                        }
                     }
-                    await Task.Delay(300);
+                    catch (Exception e)
+                    {
+                        LogError($"Caught exception {e.GetType().FullName} when resending messages. Details: {e.ToString()}");
+                    }
                 }
             });
         }
@@ -559,7 +560,14 @@ namespace MyNodes.Gateways.MySensors
                 }
                 else
                 {
-                    prefix = "OUT";
+                    if (mes.resendCount == 0)
+                    {
+                        prefix = "OUT";
+                    }
+                    else
+                    {
+                        prefix = $"RE{mes.resendCount}";
+                    }
                 }
                 LogInfo($"{prefix} - Node[{sensor.nodeId}] Sensor[{sensor.sensorId}] datatype: [{sensor.dataType}] state: [{sensor.state}]");
 
@@ -636,23 +644,18 @@ namespace MyNodes.Gateways.MySensors
                 sensorId = sensor.sensorId,
                 subType = (int)sensor.dataType
             };
-            SendMessage(message);
             messagesNotAcked.AddOrUpdate(message, MaxResendCount, (existingMessage, remainingResendCount) => MaxResendCount);
+            SendMessage(message);
         }
 
-        public int GetFreeNodeId()
+        private int GetFreeNodeId()
         {
-            for (int i = 1; i < 254; i++)
+            var nodeId = Enumerable.Range(1, 254).FirstOrDefault(i => GetNode(i) == null);
+            if (nodeId == 0)
             {
-                bool found = nodes.Any(node => node.Id == i);
-
-                if (!found)
-                {
-                    return i;
-                }
+                return 255;
             }
-
-            return 255;
+            return nodeId;
         }
 
         public void SendNewIdResponse()
